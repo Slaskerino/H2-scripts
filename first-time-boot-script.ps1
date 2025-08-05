@@ -10,3 +10,4 @@ Set-Service -Name "sshd" -StartupType Automatic
 New-NetFirewallRule -Name sshd -DisplayName 'OpenSSH SSH Server' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
 
 # Din mor er en mand
+# Din mormor er en mand
