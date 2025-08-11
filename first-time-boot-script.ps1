@@ -79,7 +79,7 @@ else {
 if ($PSVersionTable.PSVersion.Major -isnot 7) {
     $opdater_PS = Read-Host "Du kører på Version "$PSVersionTable.PSVersion.Major" af Powershell. Den seneste version er 7.5.2. Vil du opdatere? (ja/nej)"
     if($opdater_PS -eq "ja") {
-        Invoke-WebRequest -Uri "https://github.com/PowerShell/PowerShell/releases/download/v7.5.2/PowerShell-7.5.2-win-x64.msi" -OutFile "pwsh.msi"
+        Start-BitsTransfer -Source "https://github.com/PowerShell/PowerShell/releases/download/v7.5.2/PowerShell-7.5.2-win-x64.msi" -Destination "pwsh.msi"
         msiexec.exe /i "pwsh.msi" /qn /norestart
     }
     else {
