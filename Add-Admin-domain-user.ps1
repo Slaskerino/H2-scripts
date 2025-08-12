@@ -1,0 +1,37 @@
+# Sørg for at AD-modulet er tilgængeligt
+Import-Module ActiveDirectory
+ 
+# Spørg efter brugernavn (SAM-account name)
+$Username = Read-Host "Indtast brugernavn på den nye domæneadministrator"
+ 
+# Spørg efter fulde navn
+$FullName = Read-Host "Indtast det fulde navn på den nye bruger"
+ 
+# Spørg efter adgangskode (skjult input)
+$Password = Read-Host "Indtast adgangskode til $Username" -AsSecureString
+ 
+# Domæne og OU
+$Domain = "Alpaco.local"
+$OU = "OU=Users,DC=Alpaco,DC=local"   # Tilpas til din ønskede placering
+ 
+try {
+    # Opret AD-bruger
+    New-ADUser `
+        -Name $FullName `
+        -SamAccountName $Username `
+        -UserPrincipalName "$Username@$Domain" `
+        -Path $OU `
+        -AccountPassword $Password `
+        -Enabled $true `
+        -PasswordNeverExpires $true `
+        -ChangePasswordAtLogon $false `
+        -Description "Domæneadministrator"
+ 
+    # Tilføj til Domain Admins-gruppen
+    Add-ADGroupMember -Identity "Domain Admins" -Members $Username
+ 
+    Write-Host "Domænebrugeren '$Username' ($FullName) er oprettet og tilføjet som Domain Admin." -ForegroundColor Green
+}
+catch {
+    Write-Host "Der opstod en fejl: $_" -ForegroundColor Red
+}
