@@ -1,7 +1,7 @@
 # Input: Domænenavn
 $domainName = "alpaco.local"
 
-# Input: Brugernavn til domænet (kan skrives som f.eks. 'CONTOSO\Administrator' eller 'Administrator')
+# Input: Admin bruger til domænet 
 $domainUser += $domainName + "\"
 $domainUser += Read-Host "Indtast brugernavn med admin rettigheder"
 
