@@ -1,4 +1,6 @@
 # Variables for scopes
+
+# Der kan oprettes startIP og endIP i array i stedet for at convertere til byte arrays.
 $scopes = @(
     @{Name = "VLAN10"; Subnet = "10.0.10.0"; Mask = "255.255.255.0"; Gateway = "10.0.10.1"; DNS = @("10.0.10.11", "10.0.10.12"); IPv6Subnet = "2001:db8:acad:10::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12")},
     @{Name = "VLAN20"; Subnet = "10.0.20.0"; Mask = "255.255.255.0"; Gateway = "10.0.20.1"; DNS = @("10.0.20.11", "10.0.20.12"); IPv6Subnet = "2001:db8:acad:20::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12")},
@@ -67,10 +69,10 @@ Invoke-Command -ComputerName $server -ScriptBlock {
             Add-DhcpServerv6Scope -Name $scopeName -Prefix $ipv6Subnet -State Active
 
             # Add Router option (option 23)
-            Set-DhcpServerv6OptionValue -ScopeId $ipv6Subnet -Router $scope.Gateway
+            # Set-DhcpServerv6OptionValue -ScopeId $ipv6Subnet -Router $scope.Gateway
 
             # Add DNS servers option (option 23 is router, option 24 is DNS servers)
-            Set-DhcpServerv6OptionValue -ScopeId $ipv6Subnet -DnsServer $scope.DNS
+            Set-DhcpServerv6OptionValue -ScopeId $ipv6Subnet -DnsServer $scope.IPv6DNS
         }
         else {
             Write-Host "IPv6 Scope $scopeName already exists."
