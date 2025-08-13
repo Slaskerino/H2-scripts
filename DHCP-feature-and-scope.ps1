@@ -2,10 +2,10 @@
 
 # Der kan oprettes startIP og endIP i array i stedet for at convertere til byte arrays.
 $scopes = @(
-    @{Name = "VLAN10"; Subnet = "10.0.10.0"; Mask = "255.255.255.0"; Gateway = "10.0.10.1"; DNS = @("10.0.10.11", "10.0.10.12"); IPv6Subnet = "2001:db8:acad:10::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12"); StartIP = "10.0.10.50"; EndIP = "10.0.10.200"},
-    @{Name = "VLAN20"; Subnet = "10.0.20.0"; Mask = "255.255.255.0"; Gateway = "10.0.20.1"; DNS = @("10.0.20.11", "10.0.20.12"); IPv6Subnet = "2001:db8:acad:20::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12"); StartIP = "10.0.20.50"; EndIP = "10.0.20.200"},
-    @{Name = "VLAN30"; Subnet = "10.0.30.0"; Mask = "255.255.255.0"; Gateway = "10.0.30.1"; DNS = @("10.0.30.11", "10.0.30.12"); IPv6Subnet = "2001:db8:acad:30::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12"); StartIP = "10.0.30.50"; EndIP = "10.0.30.200"},
-    @{Name = "VLAN69"; Subnet = "10.0.69.0"; Mask = "255.255.255.0"; Gateway = "10.0.69.1"; DNS = @("10.0.69.11", "10.0.69.12"); IPv6Subnet = "2001:db8:acad:69::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12"); StartIP = "10.0.69.50"; EndIP = "10.0.69.200"}
+    @{Name = "VLAN10"; Subnet = "10.0.10.0"; Mask = "255.255.255.0"; Gateway = "10.0.10.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:10::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12"); StartIP = "10.0.10.50"; EndIP = "10.0.10.200"},
+    @{Name = "VLAN20"; Subnet = "10.0.20.0"; Mask = "255.255.255.0"; Gateway = "10.0.20.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:20::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12"); StartIP = "10.0.20.50"; EndIP = "10.0.20.200"},
+    @{Name = "VLAN30"; Subnet = "10.0.30.0"; Mask = "255.255.255.0"; Gateway = "10.0.30.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:30::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12"); StartIP = "10.0.30.50"; EndIP = "10.0.30.200"},
+    @{Name = "VLAN69"; Subnet = "10.0.69.0"; Mask = "255.255.255.0"; Gateway = "10.0.69.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:69::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12"); StartIP = "10.0.69.50"; EndIP = "10.0.69.200"}
 )
 
 $server = "DC01"
@@ -71,16 +71,19 @@ Invoke-Command -ComputerName $server -ScriptBlock {
         $existingScopeV6 = Get-DhcpServerv6Scope | Where-Object { $_.Name -eq $scopeName }
         if (-not $existingScopeV6) {
             Write-Host "Creating IPv6 Scope: $scopeName"
+            remove-DhcpServerv6Scope -Prefix $ipv6Subnet -force
+            #remove-DhcpServerv6OptionValue -Prefix $ipv6Subnet -DnsServer $scope.IPv6DNS
+
             Add-DhcpServerv6Scope -Name $scopeName -Prefix $ipv6Subnet -State Active
 
             # Add Router option (option 23)
             # Set-DhcpServerv6OptionValue -ScopeId $ipv6Subnet -Router $scope.Gateway
 
             # Add DNS servers option (option 23 is router, option 24 is DNS servers)
-            Set-DhcpServerv6OptionValue -ScopeId $ipv6Subnet -DnsServer $scope.IPv6DNS
+            Set-DhcpServerv6OptionValue -Prefix $ipv6Subnet -DnsServer $scope.IPv6DNS
         }
         else {
             Write-Host "IPv6 Scope $scopeName already exists."
         }
     }
-} -ArgumentList ($scopes)
+} -ArgumentList (,$scopes)
