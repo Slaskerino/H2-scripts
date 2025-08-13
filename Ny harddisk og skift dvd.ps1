@@ -1,4 +1,4 @@
-Flyt DVD-drevet (hvis D: allerede er taget)
+#Flyt DVD-drevet (hvis D: allerede er taget)
 $cdrom = Get-CimInstance -ClassName Win32_Volume | Where-Object { $_.DriveLetter -eq "D:" -and $_.DriveType -eq 5 }
 if ($cdrom) {
     Set-CimInstance -InputObject $cdrom -Property @{DriveLetter = "Z:"}
