@@ -73,8 +73,7 @@ if ($Confirm -eq "ja") {
         Rename-Computer -NewName $NewName -Force
         Write-Host "Servernavn aendret til $NewName." -ForegroundColor Green
         Write-Host "Genstarter for at gennemfoere aendringen..." -ForegroundColor Cyan
-        # Genstart maskinen
-        Restart-Computer
+        
     }
     catch {
         Write-Host "Der opstod en fejl: $_" -ForegroundColor Red
@@ -116,3 +115,34 @@ w32tm /resync /nowait
 Write-Host "NTP-server sat til $NtpServer og tidssynkronisering startet." -ForegroundColor Green
 # Din mor er en mand
 
+# Input: Domænenavn
+$domainName = "alpaco.local"
+
+# Input: Admin bruger til domænet 
+$domainUser += $domainName + "\"
+$domainUser += Read-Host "Indtast brugernavn med admin domæne rettigheder"
+
+# Input: Password (skjult)
+$password = Read-Host "Indtast adgangskode" -AsSecureString
+
+# Lav PSCredential objekt
+$credential = New-Object System.Management.Automation.PSCredential ($domainUser, $password)
+
+try {
+    Write-Host "Forsøger at tilføje computeren til domænet $domainName ..." -ForegroundColor Cyan
+    
+    Add-Computer -DomainName $domainName -Credential $credential -Force -ErrorAction Stop
+
+    Write-Host "Computeren er blevet tilføjet til domænet $domainName." -ForegroundColor Green
+
+    # Spørg om genstart
+    $restart = Read-Host "Vil du genstarte computeren nu? (J/N)"
+    if ($restart.ToUpper() -eq 'J') {
+        Restart-Computer
+    } else {
+        Write-Host "Husk at genstarte computeren senere for at fuldføre domæne-join."
+    }
+
+} catch {
+    Write-Error "Noget gik galt under domænetilknytning: $($_.Exception.Message)"
+}
