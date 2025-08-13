@@ -14,7 +14,6 @@ if (-not $newDisk) {
 }
 
 #Gør disken online og initialiser
-Set-Disk -Number $newDisk.Number -IsOffline $false -IsReadOnly $false
 Initialize-Disk -Number $newDisk.Number -PartitionStyle GPT
 Write-Host "Disk initialiseret."
 
@@ -24,5 +23,4 @@ Format-Volume -Partition $part -FileSystem NTFS -NewFileSystemLabel "DataDisk" -
 Write-Host "Disk formateret."
 
 #Tildel drevbogstav D:
-Set-Partition -PartitionNumber $part.PartitionNumber -DiskNumber $newDisk.Number -NewDriveLetter "D"
 Write-Host "Disk tildelt drevbogstav D:"
