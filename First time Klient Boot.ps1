@@ -1,5 +1,6 @@
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
+
 #Find InterfaceAlias på adapteren
 $Adapters = @(Get-NetAdapter | Where-Object { $_.Status -eq "Up" })
 
