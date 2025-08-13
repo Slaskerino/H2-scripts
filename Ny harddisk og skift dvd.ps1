@@ -17,10 +17,8 @@ if (-not $newDisk) {
 Initialize-Disk -Number $newDisk.Number -PartitionStyle GPT
 Write-Host "Disk initialiseret."
 
-#Opret partition og formater
+#Opret partition og formater. Dette tildeler automatisk næste ledige bogstav som nu er D:
 $part = New-Partition -DiskNumber $newDisk.Number -UseMaximumSize -AssignDriveLetter
 Format-Volume -Partition $part -FileSystem NTFS -NewFileSystemLabel "DataDisk" -Confirm:$false
 Write-Host "Disk formateret."
-
-#Tildel drevbogstav D:
 Write-Host "Disk tildelt drevbogstav D:"
