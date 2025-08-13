@@ -2,10 +2,10 @@
 
 # Der kan oprettes startIP og endIP i array i stedet for at convertere til byte arrays.
 $scopes = @(
-    @{Name = "VLAN10"; Subnet = "10.0.10.0"; Mask = "255.255.255.0"; Gateway = "10.0.10.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:10::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12"); StartIP = "10.0.10.50"; EndIP = "10.0.10.200"},
-    @{Name = "VLAN20"; Subnet = "10.0.20.0"; Mask = "255.255.255.0"; Gateway = "10.0.20.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:20::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12"); StartIP = "10.0.20.50"; EndIP = "10.0.20.200"},
-    @{Name = "VLAN30"; Subnet = "10.0.30.0"; Mask = "255.255.255.0"; Gateway = "10.0.30.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:30::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12"); StartIP = "10.0.30.50"; EndIP = "10.0.30.200"},
-    @{Name = "VLAN69"; Subnet = "10.0.69.0"; Mask = "255.255.255.0"; Gateway = "10.0.69.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:69::"; IPv6DNS = @("2001:db8:acad:10::11","2001:db8:acad:10::12"); StartIP = "10.0.69.50"; EndIP = "10.0.69.200"}
+    @{Name = "VLAN10"; Subnet = "10.0.10.0"; Mask = "255.255.255.0"; Gateway = "10.0.10.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:10::"; IPv6DNS = "2001:db8:acad:10::11"; StartIP = "10.0.10.50"; EndIP = "10.0.10.200"},
+    @{Name = "VLAN20"; Subnet = "10.0.20.0"; Mask = "255.255.255.0"; Gateway = "10.0.20.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:20::"; IPv6DNS = "2001:db8:acad:10::11"; StartIP = "10.0.20.50"; EndIP = "10.0.20.200"},
+    @{Name = "VLAN30"; Subnet = "10.0.30.0"; Mask = "255.255.255.0"; Gateway = "10.0.30.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:30::"; IPv6DNS = "2001:db8:acad:10::11"; StartIP = "10.0.30.50"; EndIP = "10.0.30.200"},
+    @{Name = "VLAN69"; Subnet = "10.0.69.0"; Mask = "255.255.255.0"; Gateway = "10.0.69.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:69::"; IPv6DNS = "2001:db8:acad:10::11"; StartIP = "10.0.69.50"; EndIP = "10.0.69.200"}
 )
 
 $server = "DC01"
