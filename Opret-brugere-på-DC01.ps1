@@ -12,6 +12,13 @@ $users = Import-Csv -Path $csvPath -Delimiter ";"
 
 Write-Host "=== Creating OUs... ===" -ForegroundColor Cyan
 
+if (-not (Get-ADOrganizationalUnit -Filter 'Name -eq "Staff"' -SearchBase "OU=ALPACO,DC=alpaco,DC=local" -ErrorAction SilentlyContinue)) {
+    New-ADOrganizationalUnit -Name "Staff" -Path "OU=ALPACO,DC=alpaco,DC=local"
+} else {
+    Write-Host "OU 'Staff' already exists."
+}
+
+
 # Create required OUs
 $users | ForEach-Object {
     $countryOU = "OU=$($_.Country)"
