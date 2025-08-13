@@ -5,7 +5,7 @@ Import-Module ActiveDirectory
 $csvPath = "ALPACO_users.csv"
 
 # Base OU path for the company
-$ouBase = "OU=Users,OU=ALPACO,DC=corp,DC=sdwmu,DC=dk"
+$ouBase = "OU=Users,DC=alpaco,DC=local"
 
 # Import users from CSV
 $users = Import-Csv -Path $csvPath -Delimiter ";"
@@ -74,7 +74,7 @@ foreach ($user in $users) {
         Write-Host "Created user: $fullName ($samAccountName)" -ForegroundColor Green
     }
     catch {
-        Write-Host "Error creating user $fullName: $_" -ForegroundColor Red
+        Write-Host "Error creating user $fullName, Error: $_" -ForegroundColor Red
     }
 }
 
