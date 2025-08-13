@@ -20,7 +20,7 @@ $Host_DG = Read-Host "Hvilken IP Har Default gateway? "
 $Prefix = 24
 $DNS1 = "10.0.10.11"
 $DNS2 = "10.142.12.2"
-
+$IPv6 = "2001:db8:acad:10::11"
 
 #Find InterfaceAlias på adapteren
 $Adapters = @(Get-NetAdapter | Where-Object { $_.Status -eq "Up" })
@@ -40,6 +40,13 @@ elseif ($Adapters.count -gt 1) {
 else {
     Write-Host "Der er fandeme ikke nogen Adapterer! Har du installeret en driver Henri?!?"
 }
+
+$hn = hostname
+if ($hn -like "*DC*") {
+    New-NetIPAddress -InterfaceAlias $adapters.name -IPAddress $IPv6 -PrefixLength 64 -AddressFamily IPv6
+
+}
+
 
 # Få en ssh server op og køre
 
