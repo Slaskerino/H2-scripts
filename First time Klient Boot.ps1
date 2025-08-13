@@ -19,6 +19,17 @@ else {
     Write-Host "Der er ikke nogen adaptere!"
 }
 
+#Anskaffer sig en Ip adresse fra DHCP serveren
+Write-Host "Frigiver IP..."
+ipconfig /release
+
+Write-Host "Fornyer IP..."
+ipconfig /renew
+
+Write-Host "Anskaffer sig en IP fra DHCP serveren, vent venligst"
+Start-Sleep -Seconds 10
+
+
 # Sæt tidszone til dansk tid
 Set-TimeZone -Id "Central Europe Standard Time"
 
