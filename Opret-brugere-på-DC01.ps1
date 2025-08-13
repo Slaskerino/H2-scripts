@@ -5,7 +5,7 @@ Import-Module ActiveDirectory
 $csvPath = "ALPACO_users.csv"
 
 # Base OU path for the company
-$ouBase = "OU=Users,DC=alpaco,DC=local"
+$ouBase = "OU=Staff,DC=alpaco,DC=local"
 
 # Import users from CSV
 $users = Import-Csv -Path $csvPath -Delimiter ";"
