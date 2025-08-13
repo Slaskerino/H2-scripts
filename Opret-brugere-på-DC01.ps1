@@ -5,12 +5,19 @@ Import-Module ActiveDirectory
 $csvPath = "ALPACO_users.csv"
 
 # Base OU path for the company
-$ouBase = "OU=Users,DC=alpaco,DC=local"
+$ouBase = "OU=Staff,DC=alpaco,DC=local"
 
 # Import users from CSV
 $users = Import-Csv -Path $csvPath -Delimiter ";"
 
 Write-Host "=== Creating OUs... ===" -ForegroundColor Cyan
+
+if (-not (Get-ADOrganizationalUnit -Filter 'Name -eq "Staff"' -SearchBase "DC=alpaco,DC=local" -ErrorAction SilentlyContinue)) {
+    New-ADOrganizationalUnit -Name "Staff" -Path "DC=alpaco,DC=local"
+} else {
+    Write-Host "OU 'Staff' already exists."
+}
+
 
 # Create required OUs
 $users | ForEach-Object {
