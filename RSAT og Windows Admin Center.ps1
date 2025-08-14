@@ -16,7 +16,8 @@ Install-WindowsFeature DNS -IncludeManagementTools
 Set-DnsServerPrimaryZone -Name "alpaco.local" -securesecondaries transfertosecureservers -SecondaryServers "10.0.10.22"
 
 #Åben op for TCP 53 forbindelsen fra DC01 til DNS02 igennem firewall.
-New-NetFirewallRule -DisplayName "DNS Zone Transfer TCP" -Direction Inbound -Protocol TCP -LocalPort 53 -RemoteAddress 10.0.10.22 -Action Allow
+New-NetFirewallRule -DisplayName "DNS TCP Port 53" -Direction Inbound -Protocol TCP -LocalPort 53 -Action Allow
+New-NetFirewallRule -DisplayName "DNS UDP Port 53" -Direction Inbound -Protocol UDP -LocalPort 53 -Action Allow
 
 #Opret DNS forwarder
 Set-DnsServerForwarder -IPAddress "10.142.12.2","10.142.12.3" -PassThru
