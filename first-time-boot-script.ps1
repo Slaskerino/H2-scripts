@@ -106,6 +106,29 @@ else {
     Write-Host "Intet foretaget." -ForegroundColor Gray
 }
 
+# Opdater hostname i registreringsdatabasen
+
+if ($Confirm -eq "ja") {
+    try {
+        Remove-ItemProperty -path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -name "Hostname" 
+        Remove-ItemProperty -path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -name "NV Hostname" 
+
+        Set-ItemProperty -path "HKLM:\SYSTEM\CurrentControlSet\Control\Computername\Computername" -name "Computername" -value $NewName
+        Set-ItemProperty -path "HKLM:\SYSTEM\CurrentControlSet\Control\Computername\ActiveComputername" -name "Computername" -value $NewName
+        Set-ItemProperty -path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -name "Hostname" -value $NewName
+        Set-ItemProperty -path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -name "NV Hostname" -value  $NewName
+        Set-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -name "AltDefaultDomainName" -value $NewName
+        Set-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -name "DefaultDomainName" -value $NewName
+    }
+    catch {
+        Write-Host "Der opstod en fejl: $_" -ForegroundColor Red
+    }
+}
+
+$actual_hostname = hostname
+
+write-host "Nye hostname fra maskinen er: $actual_hostname"
+
 if ($NewName -like "*DC*") {
     Write-Host "Konfigurerer IPv6 da dette er en DC" -ForegroundColor Gray
     $IPv6_address = $IPv6_subnet += Read-Host "Hvilken adresse skal hosten have paa subnettet $IPv6_subnet/64?:"
