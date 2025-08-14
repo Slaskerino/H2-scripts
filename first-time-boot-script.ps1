@@ -117,20 +117,36 @@ if ($NewName -like "*DC*") {
     }
 }
 
-if ($PSVersionTable.PSVersion.Major -ne 7) {
-    $opdater_PS = Read-Host "Du koerer paa Version "$PSVersionTable.PSVersion.Major" af Powershell. Den seneste version er 7.5.2. Vil du opdatere? (ja/nej)"
-    if($opdater_PS -eq "ja") {
-        Start-BitsTransfer -Source "https://github.com/PowerShell/PowerShell/releases/download/v7.5.2/PowerShell-7.5.2-win-x64.msi" -Destination "pwsh.msi"
-        msiexec.exe /package pwsh.msi /quiet ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 ADD_FILE_CONTEXT_MENU_RUNPOWERSHELL=1 ENABLE_PSREMOTING=1 REGISTER_MANIFEST=1 USE_MU=1 ENABLE_MU=1 ADD_PATH=1
-        Write-Host "Powershell opdateret. Husk at bruge pwsh komandoen for at starte powershell 7 fremover." -ForegroundColor Green
+try {
+    if ($PSVersionTable.PSVersion.Major -ne 7) {
+        $opdater_PS = Read-Host "Du kører på version $($PSVersionTable.PSVersion.Major) af PowerShell. Den seneste version er 7.5.2. Vil du opdatere? (ja/nej)"
+        
+        if ($opdater_PS -eq "ja") {
+            # Lav temp-mappe hvis den ikke findes
+            if (-not (Test-Path "C:\temp")) {
+                New-Item -ItemType Directory -Path "C:\temp" | Out-Null
+            }
+
+            # Download MSI
+            Start-BitsTransfer -Source "https://github.com/PowerShell/PowerShell/releases/download/v7.5.2/PowerShell-7.5.2-win-x64.msi" -Destination "C:\temp\pwsh.msi"
+
+            # Installer MSI
+            Start-Process -FilePath "msiexec.exe" -ArgumentList '/package "C:\temp\pwsh.msi" /quiet ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 ADD_FILE_CONTEXT_MENU_RUNPOWERSHELL=1 ENABLE_PSREMOTING=1 REGISTER_MANIFEST=1 USE_MU=1 ENABLE_MU=1 ADD_PATH=1' -Wait
+
+            Write-Host "PowerShell er opdateret. Husk at bruge 'pwsh' for at starte PowerShell 7 fremover." -ForegroundColor Green
+        }
+        else {
+            Write-Host "PowerShell bliver ikke opdateret."
+        }
     }
     else {
-        write-host "Powershell bliver ikke opdateret"
+        Write-Host "PowerShell ser ud til at være opdateret."
     }
 }
-else {
-    Write-Host "Powershell ser ud til at være opdateret"
+catch {
+    Write-Host "Der opstod en fejl under opdateringen: $($_.Exception.Message)" -ForegroundColor Red
 }
+
 
 try {
     Write-Host "Opdaterer NTP server til $Ntpserver" -ForegroundColor Cyan 
