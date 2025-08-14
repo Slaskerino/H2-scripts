@@ -12,6 +12,12 @@ Install-ADDSForest -DomainName "Alpaco.local" -DomainNetbiosName "Alpaco" -SafeM
 #Denne rolle tillader zoneoverførsel af DNS fra serveren.
 Install-WindowsFeature DNS -IncludeManagementTools
 
+#Her sættes primary DNS zone og pointerer secondary DNS server.
+Set-DnsServerPrimaryZone -Name "alpaco.local" -securesecondaries transfertosecureservers -SecondaryServers "10.0.10.22"
+
+#Åben op for TCP 53 forbindelsen fra DC01 til DNS02 igennem firewall.
+New-NetFirewallRule -DisplayName "DNS Zone Transfer TCP" -Direction Inbound -Protocol TCP -LocalPort 53 -RemoteAddress 10.0.10.22 -Action Allow
+
 
 ########## MGMT - Management server
 
