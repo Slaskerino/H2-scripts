@@ -109,6 +109,7 @@ else {
 # Opdater hostname i registreringsdatabasen
 
 if ($Confirm -eq "ja") {
+    Write-Host "Opdaterer hostname i registreringsdatabasen" -ForegroundColor Yellow
     try {
         Remove-ItemProperty -path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -name "Hostname" 
         Remove-ItemProperty -path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -name "NV Hostname" 
@@ -119,6 +120,8 @@ if ($Confirm -eq "ja") {
         Set-ItemProperty -path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters" -name "NV Hostname" -value  $NewName
         Set-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -name "AltDefaultDomainName" -value $NewName
         Set-ItemProperty -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon" -name "DefaultDomainName" -value $NewName
+
+        Write-Host "Hvis det her virker, saa er det bare fe" -ForegroundColor Green
     }
     catch {
         Write-Host "Der opstod en fejl: $_" -ForegroundColor Red
