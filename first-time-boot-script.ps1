@@ -36,6 +36,10 @@ elseif ($Adapters.count -gt 1) {
     Write-Host "Der er pt."$Adapters.count " adaptere installeret. De er følgende:"
     Get-NetAdapter | Where-Object Status -eq "Up"
     $Single_Adapter = Read-Host "Hvilken adapter vil du opdatere? Du skal svare med navnet og det skal være præcist det der står: "
+
+    Write-Host $Single_Adapter " Bliver configureret"
+    New-NetIPAddress -InterfaceAlias $Single_Adapter -IPAddress $Host_IP -PrefixLength $Prefix -DefaultGateway $Host_DG
+    Set-DnsClientServerAddress -InterfaceAlias $Single_Adapter -ServerAddresses $DNS1,$DNS2
 }
 else {
     Write-Host "Der er fandeme ikke nogen Adapterer! Har du installeret en driver Henri?!?"
@@ -44,6 +48,7 @@ else {
 $hn = hostname
 if ($hn -like "*DC*") {
     New-NetIPAddress -InterfaceAlias $adapters.name -IPAddress $IPv6 -PrefixLength 64 -AddressFamily IPv6
+    
 
 }
 
