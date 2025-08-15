@@ -1,0 +1,30 @@
+en
+conf t
+hostname RT01
+ip domain-name slasker.dk
+line vty 0 15
+transport input ssh
+login local
+exit
+crypto key generate rsa modulus 2048
+username admin secret Password1	
+enable secret Password1
+ip ssh version 2
+int gi 0/0
+ip add 10.0.69.1 255.255.255.0
+no shut
+exit
+service password-encryption
+banner motd #Din mor er en mand#
+
+
+int se 0/0/0
+no shut
+ip add 10.10.0.2 255.255.255.252
+des ISP for Odense
+
+
+int se 0/0/1
+no shut
+ip add 10.20.0.2 255.255.255.252
+des ISP for Aarhus
