@@ -63,8 +63,6 @@ Invoke-Command -ComputerName $server -ScriptBlock {
         $existingScopeV6 = Get-DhcpServerv6Scope | Where-Object { $_.Name -eq $scopeName }
         if (-not $existingScopeV6) {
             Write-Host "Creating IPv6 Scope: $scopeName"
-            remove-DhcpServerv6Scope -Prefix $ipv6Subnet -force
-            #remove-DhcpServerv6OptionValue -Prefix $ipv6Subnet -DnsServer $scope.IPv6DNS
 
             Add-DhcpServerv6Scope -Name $scopeName -Prefix $ipv6Subnet -State Active
 
