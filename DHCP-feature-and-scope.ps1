@@ -5,7 +5,8 @@ $scopes = @(
     @{Name = "VLAN10"; Subnet = "10.0.10.0"; Mask = "255.255.255.0"; Gateway = "10.0.10.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:10::"; IPv6DNS = "2001:db8:acad:10::11"; StartIP = "10.0.10.50"; EndIP = "10.0.10.200"},
     @{Name = "VLAN20"; Subnet = "10.0.20.0"; Mask = "255.255.255.0"; Gateway = "10.0.20.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:20::"; IPv6DNS = "2001:db8:acad:10::11"; StartIP = "10.0.20.50"; EndIP = "10.0.20.200"},
     @{Name = "VLAN30"; Subnet = "10.0.30.0"; Mask = "255.255.255.0"; Gateway = "10.0.30.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:30::"; IPv6DNS = "2001:db8:acad:10::11"; StartIP = "10.0.30.50"; EndIP = "10.0.30.200"},
-    @{Name = "VLAN69"; Subnet = "10.0.69.0"; Mask = "255.255.255.0"; Gateway = "10.0.69.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:69::"; IPv6DNS = "2001:db8:acad:10::11"; StartIP = "10.0.69.50"; EndIP = "10.0.69.200"}
+    @{Name = "VLAN69"; Subnet = "10.0.69.0"; Mask = "255.255.255.0"; Gateway = "10.0.69.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:69::"; IPv6DNS = "2001:db8:acad:10::11"; StartIP = "10.0.69.50"; EndIP = "10.0.69.200"},
+    @{Name = "VLAN120"; Subnet = "192.168.20.0"; Mask = "255.255.255.0"; Gateway = "192.168.20.1"; DNS = "10.0.10.11"; IPv6Subnet = "2001:db8:acad:120::"; IPv6DNS = "2001:db8:acad:10::11"; StartIP = "192.168.20.50"; EndIP = "192.168.20.200"}
 )
 
 $server = "DC01"
@@ -35,15 +36,6 @@ Invoke-Command -ComputerName $server -ScriptBlock {
         $mask = $scope.Mask
         $startIP = $scope.StartIP
         $endIP = $scope.EndIP
-
-        # ------ Nedenstående er ikke nødvendigt da det defineres i $scopes
-
-        #$startIP = ([System.Net.IPAddress]::Parse($subnet)).GetAddressBytes()
-        #$startIP[3] = 10  # Start IP address .10 (adjust as needed)
-        #$startIPStr = ([System.Net.IPAddress]::new($startIP)).ToString()
-        #$endIP = ([System.Net.IPAddress]::Parse($subnet)).GetAddressBytes()
-        #$endIP[3] = 200   # End IP address .200 (adjust as needed)
-        #$endIPStr = ([System.Net.IPAddress]::new($endIP)).ToString()
 
         # Check if scope exists
         $existingScope = Get-DhcpServerv4Scope | Where-Object { $_.Name -eq $scopeName }
