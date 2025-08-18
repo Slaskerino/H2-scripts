@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# hent scriptet med følgende kommando:
+# wget https://raw.githubusercontent.com/Slaskerino/H2-scripts/refs/heads/main/Wireguard-config.sh
+
+# Kør det derefter med følende kommando:
+# sh Wireguard-config.sh
+
+# Når scriptet er kørt printer det en public key ud som skal oploades til wg0.conf på GCP serveren.
+
 set -e
 
 # ======= CONFIGURATION =======
