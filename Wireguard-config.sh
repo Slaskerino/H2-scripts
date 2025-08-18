@@ -82,3 +82,4 @@ iptables -A FORWARD -i $WG_INTERFACE -o $PHYS_IFACE -m state --state RELATED,EST
 wg_public_key=$(cat "$WG_PRIVATE_KEY_PATH.pub")
 echo "[✓] WireGuard relay configured on $WG_INTERFACE."
 echo -e "\npublickey til GCP instance: \n\n$wg_public_key\n"
+echo "Din mor er en mand®"
