@@ -51,7 +51,7 @@ PostDown = iptables -D FORWARD -i $WG_INTERFACE -j ACCEPT; iptables -D FORWARD -
 [Peer]
 PublicKey = $GCP_PUBLIC_KEY
 Endpoint = $GCP_PUBLIC_IP:$WG_PORT
-AllowedIPs = 0.0.0.0/0
+AllowedIPs = 10.0.0.0/16
 PersistentKeepalive = 25
 EOF
 
