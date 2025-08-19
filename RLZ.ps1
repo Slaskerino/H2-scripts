@@ -10,7 +10,8 @@ try {
     Add-DnsServerPrimaryZone `
     -NetworkId "10.0.10.0/24" `
     -ZoneFile $zonefile `
-    -DynamicUpdate Secure
+    -DynamicUpdate Secure`
+    -ComputerName $PrimaryDNS
     
     Write-Host "Zonen $zonefile blev oprettet"
 }
