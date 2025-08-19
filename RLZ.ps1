@@ -17,7 +17,15 @@ catch {
     Write-Host "Zonen blev ikke oprettet grundet: $($_.Exception.Message)"
 }
 
-Add-DnsServerSecondaryZone -Name $DomainName -MasterServers $PrimaryDNS -ComputerName $SecondaryDNS -ZoneFile $zonefile
+try {
+    Set-DnsServerPrimaryZone -ComputerName DC01 -Name $DomainName -ZoneTransferType Specific -SecondaryServers $SecondaryDNS
+    Write-Host "Ja fandeme om $SecondaryDNS blev oprettet!"
+}
+catch {
+    Write-Host "Bedre held en anden gang: $($_.Exception.Message)"
+}
+
+
 
 try {
     Add-DnsServerSecondaryZone -Name $DomainName -MasterServers $PrimaryDNS -ComputerName $SecondaryDNS -ZoneFile $zonefile
