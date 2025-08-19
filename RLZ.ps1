@@ -2,7 +2,7 @@ $zonefile = "10.0.10.in-addr.arpa.dns"
 $DomainName = "alpaco.local"
 $PrimaryDNS = "10.0.10.11" ##DC01
 $SecondaryDNS = "10.0.10.22" ##DNS02
-
+$zonepolicy = $(Get-DnsServerZoneTransferPolicy -ComputerName dc01)
 
 
 try {
@@ -18,14 +18,12 @@ catch {
 }
 
 try {
-    Set-DnsServerPrimaryZone -ComputerName DC01 -Name $DomainName -ZoneTransferType Specific -SecondaryServers $SecondaryDNS
-    Write-Host "Ja fandeme om $SecondaryDNS blev oprettet!"
+    Set-DnsServerPrimaryZone -Name $DomainName -SecureSecondaries $SecondaryDNS -ComputerName $PrimaryDNS
+    Write-Host "Serveren $SecondaryDNS blev oprettet som 2. DNS server for zonen $zonefile"
 }
 catch {
-    Write-Host "Bedre held en anden gang: $($_.Exception.Message)"
+    Write-Host "Serveren kunne ikke tilfojes grundet: $($_.Exception.Message)"
 }
-
-
 
 try {
     Add-DnsServerSecondaryZone -Name $DomainName -MasterServers $PrimaryDNS -ComputerName $SecondaryDNS -ZoneFile $zonefile
@@ -34,3 +32,4 @@ try {
 catch {
     Write-Host "Serveren kunne ikke tilfojes grundet: $($_.Exception.Message)"
 }
+
