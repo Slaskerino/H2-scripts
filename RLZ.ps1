@@ -1,3 +1,4 @@
+$Zone = "10.0.10.in-addr.arpa"
 $zonefile = "10.0.10.in-addr.arpa.dns"
 $DomainName = "alpaco.local"
 $PrimaryDNS = "10.0.10.11" ##DC01
@@ -18,7 +19,7 @@ catch {
 }
 
 try {
-    Set-DnsServerPrimaryZone -Name $zonefile -SecureSecondaries "TransferToSecureServers" -SecondaryServers $SecondaryDNS -ComputerName $PrimaryDNS
+    Set-DnsServerPrimaryZone -Name $zone -SecureSecondaries "TransferToSecureServers" -SecondaryServers $SecondaryDNS -ComputerName $PrimaryDNS
     Write-Host "Serveren $SecondaryDNS blev oprettet som 2. DNS server for zonen $zonefile"
 }
 catch {
