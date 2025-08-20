@@ -1,7 +1,7 @@
 # Set keyboard til dansk (https://learn.microsoft.com/en-us/answers/questions/618101/how-to-change-keyboard-in-windows-server-2019-core)
 Set-ItemProperty 'HKCU:\Keyboard Layout\Preload' -Name 1 -Value 00000406
 
-# Forsøg at installere VirtIO driver til netværk
+# Forsøg at installere VirtIO driver til netværk hvis drevet er mounted i D:
 Write-Host "Forsoeger at installere virtIO driverpakke" -ForegroundColor Yellow
 
 try {
@@ -142,7 +142,7 @@ if ($NewName -like "*DC*") {
         Write-Host "Der opstod en fejl: $_" -ForegroundColor Red
     }
 }
-
+#Dette vil informere om en forældet version af Powershell og tilbyde at hent og installere nyere version.
 try {
     if ($PSVersionTable.PSVersion.Major -ne 7) {
         $opdater_PS = Read-Host "Du kører på version $($PSVersionTable.PSVersion.Major) af PowerShell. Den seneste version er 7.5.2. Vil du opdatere? (ja/nej)"
@@ -173,7 +173,7 @@ catch {
     Write-Host "Der opstod en fejl under opdateringen: $($_.Exception.Message)" -ForegroundColor Red
 }
 
-
+#Vi opsætter forbindelse til NTP server.
 try {
     Write-Host "Opdaterer NTP server til $Ntpserver" -ForegroundColor Cyan 
 

@@ -1,5 +1,19 @@
+#Denne policy tillader at man kan køre scripts. Kør den først. 
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
+# Forsøg at installere VirtIO driver til netværk hvis drevet er mounted i D:
+Write-Host "Forsoeger at installere virtIO driverpakke" -ForegroundColor Yellow
+
+try {
+    $Virtio_Drive_letter = Get-Volume | Where-Object { $_.FileSystemLabel -like "*virtio*"}
+    $Virtio_Driver_Path = $Virtio_Drive_letter.DriveLetter
+    $Virtio_Driver_Path += ":\virtio-win-gt-x64"
+    msiexec.exe /i $Virtio_Driver_Path /qn /norestart
+    Write-Host "Driver installeret" -ForegroundColor Green
+}
+catch {
+    write-host "Kunne ikke installere VirtIO driver. Er der mounted en ISO til dette?"
+}
 
 #Find InterfaceAlias på adapteren
 $Adapters = @(Get-NetAdapter | Where-Object { $_.Status -eq "Up" })
