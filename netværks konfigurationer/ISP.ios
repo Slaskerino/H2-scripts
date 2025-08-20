@@ -1,3 +1,4 @@
+#Sætter SSH op på interface gi0/0 med statisk ip med kryptering.
 en
 conf t
 hostname RT01
@@ -17,13 +18,14 @@ exit
 service password-encryption
 banner motd #Din mor er en mand#
 
-
+#Sætter fast ip op for forbindelsen til Odense afdelingen.
 int se 0/0/0
 no shut
 ip add 10.10.0.2 255.255.255.252
 description ISP for Odense
 
 
+#Sætter fast ip op for forbindelsen til Århus afdelingen.
 int se 0/0/1
 no shut
 ip add 10.20.0.2 255.255.255.252

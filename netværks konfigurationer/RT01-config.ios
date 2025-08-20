@@ -1,5 +1,4 @@
-
-#Konfigurer ssh adgang
+#Sætter SSH op på interface gi0/0 med statisk ip samt kryptering.
 
 en
 conf t
@@ -62,7 +61,10 @@ ip address 10.0.70.1 255.255.255.0
 ## opdater din IP til 10.0.70.xx, forbind til RT01 på 10.0.70.1 og fortsæt
  
 conf t
- 
+
+#Her oprettes subinterfaces, subinterfacene bindes til de forskellige vlan, tildeler ip adresser, 
+#som fungerer som default gateway på de forskellige subnets og markerer interfacene som inside NAT.
+
 int gi 0/0/0.10
 encapsulation dot1q 10
 ip address 10.0.10.1 255.255.255.0
@@ -86,22 +88,33 @@ ip nat inside
 # ospf og GRE/IPSEC tunnel
 
 conf t
- 
+
+#Serial interface for tildelt fast ip.
+
 int Serial0/1/0
 no shut
 ip add 10.10.0.1 255.255.255.252
-des ISP
+description ISP
  
 exit
+
+#Denne ip route fortæller. Hvis du skal nå hosten 10.20.0.1, så send trafikken til næste-hop 10.10.0.2.
+
 ip route 10.20.0.1 255.255.255.255 10.10.0.2
  
+#Denne konfiguration starter en OSPF-proces (10), giver routeren ID 1.1.1.1, annoncerer netværkene 10.0.0.0/16 og 10.69.0.0/24 i area 0, 
+#logger ændringer i nabo-relationer, og tvinger routeren til altid at udsende en default-route (0.0.0.0/0) til de andre OSPF-routere.
+
 router ospf 10
 log-adjacency-changes
 router-ID 1.1.1.1
 network 10.0.0.0 0.0.255.255 area 0
 network 10.69.0.0 0.0.0.255 area 0
 default-information originate always
- 
+
+#Denne konfiguration opretter et GRE Tunnel interface med IP 10.69.0.1/24, hvor tunnelen starter på Serial0/1/0 og går til fjern-endens IP 10.20.0.1. 
+#Interfacet markeres som NAT inside, så trafik gennem tunnelen kan NATes.
+
 int Tunnel0
 ip add 10.69.0.1 255.255.255.0
 tunnel source Serial0/1/0
@@ -109,6 +122,9 @@ tunnel destination 10.20.0.1
 ip nat inside
  
 exit
+
+#Her defineres hvordan VPN-tunnelen skal forhandles og sikres.
+
 crypto isakmp policy 10
 encr aes 256
 authentication pre-share
@@ -116,17 +132,26 @@ group 5
 lifetime 3600
  
 exit
+
+#Dette konfigurerer nøglen og krypteringsmetoderne, som skal bruges til at sikre en IPsec VPN-tunnel.
+
 crypto isakmp key R1R2 address 10.20.0.1
 crypto ipsec transform-set TRANSFORMSET esp-aes 256 esp-sha-hmac
 mode tunnel
  
 exit
+
+#Denne binder peer, krypteringsmetoder og interessant trafik sammen i en IPsec VPN-konfiguration.
+
 crypto map CRYPTOMAP 10 ipsec-isakmp
 set peer 10.20.0.1
 set transform-set TRANSFORMSET
 match address 101
  
 exit
+
+#ACLen definerer at GRE-pakker mellem 10.10.0.1 og 10.20.0.1 skal matches, typisk for at blive krypteret af en crypto map (IPsec VPN).
+
 access-list 101 permit gre host 10.10.0.1 host 10.20.0.1
  
 int Serial0/1/0
@@ -140,8 +165,9 @@ conf t
 ipv6 unicast-routing
 ipv6 cef
 
-int gi 0/0/0.10
+#Subinterfacene indstilles som gateway og DHCP-relay for både IPv4 og IPv6.
 
+int gi 0/0/0.10
 ipv6 address 2001:db8:acad:10::1/64
 ipv6 address FE80::1 link-local
 ipv6 nd prefix default

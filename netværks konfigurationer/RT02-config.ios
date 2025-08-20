@@ -1,3 +1,4 @@
+#Sætter SSH op på interface gi0/0 med statisk ip samt kryptering.
 en
 conf t
 hostname RT02
@@ -16,6 +17,9 @@ no shut
 exit
 service password-encryption
 banner motd #Din mor er en mand#
+
+#Her oprettes subinterfaces, subinterfacene bindes til de forskellige vlan, tildeler ip adresser, 
+#som fungerer som default gateway på de forskellige subnets og markerer interfacene som inside NAT.
 
 int gi 0/0.20
 encapsulation dot1q 20
@@ -48,6 +52,9 @@ tunnel source Serial0/0/0
 tunnel destination 10.10.0.1
 
 exit
+
+#Her defineres hvordan VPN-tunnelen skal forhandles og sikres.
+
 crypto isakmp policy 10
 encr aes 256
 authentication pre-share
@@ -55,17 +62,26 @@ group 5
 lifetime 3600
 
 exit
+
+#Dette konfigurerer nøglen og krypteringsmetoderne, som skal bruges til at sikre en IPsec VPN-tunnel.
+
 crypto isakmp key R1R2 address 10.10.0.1
 crypto ipsec transform-set TRANSFORMSET esp-aes 256 esp-sha-hmac
 mode tunnel
 
 exit
+
+#Denne binder peer, krypteringsmetoder og interessant trafik sammen i en IPsec VPN-konfiguration.
+
 crypto map CRYPTOMAP 10 ipsec-isakmp
 set peer 10.10.0.1
 set transform-set TRANSFORMSET
 match address 101
 
 exit
+
+#ACLen definerer at GRE-pakker mellem 10.20.0.1 og 10.10.0.1 skal matches, typisk for at blive krypteret af en crypto map (IPsec VPN).
+
 access-list 101 permit gre host 10.20.0.1 host 10.10.0.1
 
 int Serial0/0/0
