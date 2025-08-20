@@ -10,23 +10,9 @@ crypto key generate rsa modulus 2048
 username admin secret Password1	
 enable secret Password1
 ip ssh version 2
+
 vlan 69
 name mgmt
-description mgmt vlan
-int vlan 69
-ip add 10.0.69.101 255.255.255.0
-no shut
-description interface til ssh access gennem mgmt vlan
-int range fa 0/0 - 1
-switchport mode access
-switchport access vlan 69
-no shut
-exit
-service password-encryption
-banner motd #Din mor er en mand#
-write mem
-
-# Vlan opsætning
 
 vlan 10
 name servers
@@ -36,6 +22,15 @@ name klienter
 
 vlan 30
 name guest
+
+int vlan 69
+ip add 10.0.69.101 255.255.255.0
+no shut
+description interface til ssh access gennem mgmt vlan
+
+exit
+service password-encryption
+banner motd #Din mor er en mand#
 
 int range gi 1/0/1 - 4
 switchport mode access

@@ -16,12 +16,21 @@ no shut
 exit
 service password-encryption
 banner motd #Din mor er en mand#
-write mem
 
-int se 0/0/0################################
+int gi 0/0.20
+encapsulation dot1q 20
+ip address 192.168.20.1 255.255.255.0
+ip helper-address 10.0.10.11
+
+int gi 0/0.69
+encapsulation dot1q 69
+ip address 192.168.69.1 255.255.255.0
+ip helper-address 10.0.10.11
+
+int se 0/0/0
 no shut
 ip add 10.20.0.1 255.255.255.252
-des ISP
+description ISP
 
 exit
 ip route 10.10.0.1 255.255.255.255 10.20.0.2
@@ -35,7 +44,7 @@ network 192.168.0.0 0.0.255.255 area 0
 
 int Tunnel0
 ip add 10.69.0.2 255.255.255.0
-tunnel source Serial0/0/0###############################
+tunnel source Serial0/0/0
 tunnel destination 10.10.0.1
 
 exit
@@ -59,5 +68,5 @@ match address 101
 exit
 access-list 101 permit gre host 10.20.0.1 host 10.10.0.1
 
-int Serial0/0/0 #############################
+int Serial0/0/0
 crypto map CRYPTOMAP

@@ -22,5 +22,18 @@ switchport mode access
 switchport access vlan 69
 no shut
 exit
+vlan 20
+name klienter
+
+int fa 0/23
+description trunk til proxmox
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69
+
+int fa 0/24
+description trunk til RT02
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69
+
 service password-encryption
 banner motd #Din mor er en mand#

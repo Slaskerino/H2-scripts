@@ -21,10 +21,10 @@ banner motd #Din mor er en mand#
 int se 0/0/0
 no shut
 ip add 10.10.0.2 255.255.255.252
-des ISP for Odense
+description ISP for Odense
 
 
 int se 0/0/1
 no shut
 ip add 10.20.0.2 255.255.255.252
-des ISP for Aarhus
+description ISP for Aarhus

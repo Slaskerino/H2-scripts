@@ -19,7 +19,6 @@ no shut
 exit
 service password-encryption
 banner motd #Din mor er en mand#
-write mem
 
 # NAT og PAT
 
