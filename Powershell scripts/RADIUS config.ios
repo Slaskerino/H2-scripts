@@ -1,3 +1,4 @@
+!########### Config på Switch01
 ! Slår AAA-frameworket til, som er nødvendigt for at kunne bruge RADIUS/TACACS.
 aaa new-model
 
@@ -22,3 +23,29 @@ radius-server vsa send
 ! transport input ssh
 !line con 0
 ! login authentication default
+
+
+
+
+
+!##############Config på Router01
+
+! Slår AAA-frameworket til, som er nødvendigt for at kunne bruge RADIUS/TACACS.
+aaa new-model
+
+! Login-autentificering: brug først RADIUS-server, hvis den ikke svarer → brug lokale brugere som fallback.
+aaa authentication login default group radius local
+
+! Når brugeren har autentificeret sig, afgør RADIUS (eller fallback local), hvilke rettigheder de får (fx shell:priv-lvl=15).
+aaa authorization exec default group radius local
+
+! Accounting: sender start/stop-logs til RADIUS, så du kan logge hvornår brugere åbner/lukker en session.
+aaa accounting exec default start-stop group radius
+
+! Definér named RADIUS server
+radius server NPS-RADIUS
+ address ipv4 10.0.10.12 auth-port 1812 acct-port 1813
+ key Password1
+
+! Tillader brug af Vendor-Specific Attributes (VSA) – det er det der gør, at NPS kan sende shell:priv-lvl=15 tilbage.
+radius-server vsa send
