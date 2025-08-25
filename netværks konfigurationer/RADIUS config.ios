@@ -17,14 +17,6 @@ radius-server host 10.0.10.12 auth-port 1812 acct-port 1813 key <Shared-secret>
 ! Tillader brug af Vendor-Specific Attributes (VSA) – det er det der gør, at NPS kan sende shell:priv-lvl=15 tilbage.
 radius-server vsa send
 
-! Bind linjer til AAA - Disse burde dog være aktive fra tidligere SSH opsætning
-!line vty 0 4
-! login authentication default
-! transport input ssh
-!line con 0
-! login authentication default
-
-
 
 
 
