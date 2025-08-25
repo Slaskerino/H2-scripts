@@ -1,7 +1,7 @@
 #Sætter SSH op på interface gi0/0 med statisk ip med kryptering.
 en
 conf t
-hostname RT01
+hostname ISP
 ip domain-name slasker.dk
 line vty 0 15
 transport input ssh
@@ -11,10 +11,7 @@ crypto key generate rsa modulus 2048
 username admin secret Password1	
 enable secret Password1
 ip ssh version 2
-int gi 0/0
-ip add 10.0.69.1 255.255.255.0
-no shut
-exit
+
 service password-encryption
 banner motd #Din mor er en mand#
 

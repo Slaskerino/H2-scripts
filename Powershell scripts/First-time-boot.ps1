@@ -49,7 +49,7 @@ elseif ($Adapters.count -gt 1) {
     Write-Host "Konfiguration udfort" -ForegroundColor Green
 }
 else {
-    Write-Host "Der er fandeme ikke nogen Adapterer! Har du installeret en driver Henri?!?" -ForegroundColor Red
+    Write-Host "Der er fandeme ikke nogen Adapterer!" -ForegroundColor Red
 }
 
 
