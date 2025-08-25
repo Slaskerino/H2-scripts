@@ -12,7 +12,7 @@ $Password = Read-Host "Indtast adgangskode til $Username" -AsSecureString
 
 # Domæne og OU
 $Domain = "Alpaco.local"
-$OU = "CN=Users,DC=Alpaco,DC=local"   # Default container in most AD setups
+$OU = "CN=Users,DC=Alpaco,DC=local"   
 
 try {
     # Opret AD-bruger
