@@ -62,3 +62,9 @@ int gi 1/0/24
 switchport mode trunk
 switchport trunk allowed vlan 10,20,30,69
 
+# NTP server til vores egen DC og syslog til Graylog server
+end
+conf t
+ntp server 10.0.10.11
+logging host 10.0.10.15 transport udp port 1522
+logging trap informational

@@ -203,4 +203,9 @@ ipv6 nd other-config-flag
 ipv6 dhcp relay destination  2001:db8:acad:10::11
 ip helper-address 10.0.10.11
 
-
+# NTP server til vores egen DC og syslog til Graylog server
+end
+conf t
+ntp server 10.0.10.11
+logging host 10.0.10.15 transport udp port 1521
+logging trap informational

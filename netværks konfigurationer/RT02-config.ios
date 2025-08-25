@@ -86,3 +86,10 @@ access-list 101 permit gre host 10.20.0.1 host 10.10.0.1
 
 int Serial0/0/0
 crypto map CRYPTOMAP
+
+# NTP server til vores egen DC og syslog til Graylog server
+end
+conf t
+ntp server 10.0.10.11
+logging host 10.0.10.15 transport udp port 1523
+logging trap informational

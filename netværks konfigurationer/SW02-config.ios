@@ -47,3 +47,10 @@ no shut
 
 service password-encryption
 banner motd #Din mor er en mand#
+
+# NTP server til vores egen DC og syslog til Graylog server
+end
+conf t
+ntp server 10.0.10.11
+logging host 10.0.10.15 transport udp port 1524
+logging trap informational
