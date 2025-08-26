@@ -16,7 +16,7 @@ Invoke-Command -ComputerName "DC01" -ScriptBlock {
                 -HomeDirectory $homePath `
                 -HomeDrive $driveLetter
 
-            Write-Host "✅ Updated $username: $homePath mapped to $driveLetter" -ForegroundColor Green
+            Write-Host "✅ Updated ${username}: $homePath mapped to $driveLetter" -ForegroundColor Green
         }
         catch {
             $errorMessage = "❌ Failed to update $($user.SamAccountName): $($_.Exception.Message)"
