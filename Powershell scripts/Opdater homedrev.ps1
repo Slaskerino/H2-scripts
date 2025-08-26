@@ -33,8 +33,8 @@ Invoke-Command -ComputerName "DC01" -ScriptBlock {
 }
 
 
-Invoke-Command -ComputerName "fil01" -ScriptBlock {
-    Import-Module ActiveDirectory
+Invoke-Command -ComputerName "dc01" -ScriptBlock {
+    #Import-Module ActiveDirectory
 
     $sharePath = "\\fil01\homefolders"
     $domainAdminsGroup = "alpaco.local\Domain Admins"   # Replace with your actual domain
@@ -74,7 +74,7 @@ Invoke-Command -ComputerName "fil01" -ScriptBlock {
             Write-Host "🔐 Set NTFS permissions for $username"
         }
         catch {
-            Write-Warning "❌ Failed for $username: $($_.Exception.Message)"
+            Write-Warning "❌ Failed for ${username}: $($_.Exception.Message)"
         }
     }
 }
