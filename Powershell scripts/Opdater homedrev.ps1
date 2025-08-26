@@ -31,3 +31,50 @@ Invoke-Command -ComputerName "DC01" -ScriptBlock {
         $errorLog | ForEach-Object { Write-Host $_ }
     }
 }
+
+
+Invoke-Command -ComputerName "fil01" -ScriptBlock {
+    Import-Module ActiveDirectory
+
+    $sharePath = "\\fil01\homefolders"
+    $domainAdminsGroup = "alpaco.local\Domain Admins"   # Replace with your actual domain
+    $users = Get-ADUser -Filter {HomeDirectory -like "*"} -SearchBase "OU=staff,DC=alpaco,DC=local" -Properties SamAccountName, HomeDirectory, HomeDrive
+
+    foreach ($user in $users) {
+        $username = $user.SamAccountName
+        $homeDir = Join-Path $sharePath $username
+
+        try {
+            # Create folder if it doesn't exist
+            if (-not (Test-Path $homeDir)) {
+                New-Item -ItemType Directory -Path $homeDir -Force | Out-Null
+                Write-Host "✅ Created folder: $homeDir"
+            } else {
+                Write-Host "🔄 Folder already exists: $homeDir"
+            }
+
+            # Set NTFS permissions: user full control + domain admins
+            $acl = Get-Acl $homeDir
+
+            $userIdentity = "$env:USERDOMAIN\$username"
+            $accessRuleUser = New-Object System.Security.AccessControl.FileSystemAccessRule(
+                $userIdentity, "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow"
+            )
+
+            $accessRuleAdmins = New-Object System.Security.AccessControl.FileSystemAccessRule(
+                $domainAdminsGroup, "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow"
+            )
+
+            $acl.SetAccessRuleProtection($true, $false)  # Disable inheritance
+            $acl.ResetAccessRule($accessRuleUser)
+            $acl.AddAccessRule($accessRuleAdmins)
+
+            Set-Acl -Path $homeDir -AclObject $acl
+
+            Write-Host "🔐 Set NTFS permissions for $username"
+        }
+        catch {
+            Write-Warning "❌ Failed for $username: $($_.Exception.Message)"
+        }
+    }
+}
