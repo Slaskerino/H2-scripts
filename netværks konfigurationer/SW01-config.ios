@@ -52,7 +52,7 @@ channel-group 2 mode active
 int range gi 1/0/14 - 18
 switchport mode trunk
 switchport trunk allowed vlan 10,20,30,69
-channel-group 1 mode active
+channel-group 3 mode active
 
 interface Port-channel 1
 switchport trunk allowed vlan 10,20,30,69
