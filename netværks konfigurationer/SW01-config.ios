@@ -40,16 +40,35 @@ switchport mode access
 switchport access vlan 69
 
 int range gi 1/0/5 - 8
-switchport mode access
-switchport access vlan 10
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69
+channel-group 1 mode active
 
-int range gi 1/0/9 - 12
-switchport mode access
-switchport access vlan 20
+int range gi 1/0/9 - 13
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69
+channel-group 2 mode active
 
-int range gi 1/0/13 - 16
-switchport mode access
-switchport access vlan 30
+int range gi 1/0/14 - 18
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,69
+channel-group 3 mode active
+
+interface Port-channel 1
+switchport trunk allowed vlan 10,20,30,69
+switchport mode trunk
+
+interface Port-channel 2
+switchport trunk allowed vlan 10,20,30,69
+switchport mode trunk
+
+interface Port-channel 3
+switchport trunk allowed vlan 10,20,30,69
+switchport mode trunk
+
+exit
+
+port-channel load-balance src-dst-ip-port
 
 #Sætter de to porte op til at kunne køre trunk på de nævnte vlans.
 
