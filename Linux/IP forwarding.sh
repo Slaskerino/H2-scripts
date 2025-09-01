@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Her tjekker den om der er blevet aktiveret ip forwarding i sysct1.conf filen, hvis den ikke er der skriver den det ind.
+#Her tjekker den om der er blevet aktiveret ip forwarding i sysctl.conf filen, hvis den ikke er der skriver den det ind.
 if ! grep -q "^net.ipv4.ip_forward=1" /etc/sysctl.conf; then
     echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 fi
