@@ -17,6 +17,7 @@ ufw allow from 10.0.0.0/8 to any port 23
 ufw enable
 
 echo "telnet  stream  tcp     nowait  root    /usr/sbin/tcpd  /usr/sbin/telnetd" >> /etc/inetd.conf
+sudo systemctl restart inetd
 
 #OBS nedenstående sletter din telnet forbindelse igen.
 apt autoremove telnetd --purge
