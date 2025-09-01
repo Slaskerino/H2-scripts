@@ -1,0 +1,113 @@
+#!/bin/bash
+
+set -e
+
+echo "==> Multi Iface opdator (Netplan)"
+
+# Get all non-loopback interfaces
+AVAILABLE_INTERFACES=($(ls /sys/class/net | grep -v lo))
+
+
+
+if [ "${#AVAILABLE_INTERFACES[@]}" -eq 0 ]; then
+    echo "❌ No available network interfaces found."
+    exit 1
+fi
+
+# Locate Netplan config
+NETPLAN_FILE=$(find /etc/netplan -name "*.yaml" | head -n 1)
+if [ -z "$NETPLAN_FILE" ]; then
+    echo "❌ No Netplan config file found in /etc/netplan."
+    exit 1
+fi
+
+echo "==> Backing up existing Netplan config: $NETPLAN_FILE"
+sudo cp "$NETPLAN_FILE" "${NETPLAN_FILE}.bak.$(date +%F-%T)"
+
+CONFIG=$(cat <<EOF
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+EOF
+)
+
+USED_INTERFACES=()
+
+while true; do
+    echo
+    echo "Available network interfaces:"
+    for i in "${!AVAILABLE_INTERFACES[@]}"; do
+        echo "$((i+1)). ${AVAILABLE_INTERFACES[$i]}"
+    done
+
+    read -p "Select an interface by number (or press ENTER to finish): " CHOICE
+
+    if [[ -z "$CHOICE" ]]; then
+        break
+    fi
+
+    if ! [[ "$CHOICE" =~ ^[0-9]+$ ]] || (( CHOICE < 1 || CHOICE > ${#AVAILABLE_INTERFACES[@]} )); then
+        echo "❌ Invalid selection. Try again."
+        continue
+    fi
+
+    IFACE="${AVAILABLE_INTERFACES[$((CHOICE-1))]}"
+
+    # Prevent reuse
+    if [[ " ${USED_INTERFACES[*]} " == *" $IFACE "* ]]; then
+        echo "⚠️  Interface $IFACE already configured. Choose a different one."
+        continue
+    fi
+
+    USED_INTERFACES+=("$IFACE")
+
+    read -p "Use DHCP for $IFACE? (yes/no): " USE_DHCP
+    if [[ "$USE_DHCP" =~ ^[Yy] ]]; then
+        CONFIG+="
+    $IFACE:
+      dhcp4: true"
+    else
+        read -p "Enter static IP for $IFACE (e.g., 192.168.1.50/24): " STATIC_IP
+        read -p "Enter gateway for $IFACE (or leave blank if none): " GATEWAY
+        read -p "Enter DNS servers (comma-separated or leave blank): " DNS
+
+        CONFIG+="
+    $IFACE:
+      dhcp4: no
+      addresses:
+        - $STATIC_IP"
+
+        if [[ -n "$GATEWAY" ]]; then
+            CONFIG+="
+      gateway4: $GATEWAY"
+        fi
+
+        if [[ -n "$DNS" ]]; then
+            CONFIG+="
+      nameservers:
+        addresses: [${DNS//,/ }]"
+        fi
+    fi
+done
+
+# If no interfaces selected
+if [ "${#USED_INTERFACES[@]}" -eq 0 ]; then
+    echo "⚠️ No interfaces selected. Exiting."
+    exit 1
+fi
+
+# Write the new config
+echo "==> Writing new Netplan configuration to $NETPLAN_FILE..."
+echo "$CONFIG" | sudo tee "$NETPLAN_FILE" > /dev/null
+
+# Apply config
+echo
+read -p "Do you want to apply the configuration now? (yes/no): " APPLY_NOW
+if [[ "$APPLY_NOW" =~ ^[Yy] ]]; then
+    echo "==> Applying Netplan config..."
+    sudo netplan apply
+    echo "✅ Netplan configuration applied."
+else
+    echo "⚠️ Netplan config not applied. You can run 'sudo netplan apply' manually."
+fi
