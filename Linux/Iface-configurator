@@ -4,7 +4,7 @@ set -e
 
 echo "==> Multi Iface opdator (Netplan)"
 
-# Get all non-loopback interfaces
+# Find alle ikke-loopback interfaces
 AVAILABLE_INTERFACES=($(ls /sys/class/net | grep -v lo))
 
 
@@ -14,7 +14,7 @@ if [ "${#AVAILABLE_INTERFACES[@]}" -eq 0 ]; then
     exit 1
 fi
 
-# Locate Netplan config
+# Lokaliser netplan konfig fil
 NETPLAN_FILE=$(find /etc/netplan -name "*.yaml" | head -n 1)
 if [ -z "$NETPLAN_FILE" ]; then
     echo "ingen Netplan fil blev fundet under /etc/netplan. script stopper"
@@ -93,18 +93,18 @@ done
 
 # Hvis der ikke er valgt et interface
 if [ "${#USED_INTERFACES[@]}" -eq 0 ]; then
-    echo "⚠️ No interfaces selected. Exiting."
+    echo "Ingen interfaces valgt. Forlader script."
     exit 1
 fi
 
 # Skriv ny config til fil
-echo "==> Writing new Netplan configuration to $NETPLAN_FILE..."
+echo "==> Skriver ny konfiguraqtion til $NETPLAN_FILE..."
 echo "$CONFIG" | sudo tee "$NETPLAN_FILE" > /dev/null
 
 # commit konfigurationen til netplan
 echo
-read -p "Do you want to apply the configuration now? (yes/no): " APPLY_NOW
-if [[ "$APPLY_NOW" =~ ^[Yy] ]]; then
+read -p "Vil du tilføje konfigurationen nu? (ja/nej): " APPLY_NOW
+if [[ "$APPLY_NOW" =~ ^[Jj] ]]; then
     echo "==> Tilføjer ny netplan konfig..."
     sudo netplan apply
     echo "Netplan konfiguration tilføjet."
