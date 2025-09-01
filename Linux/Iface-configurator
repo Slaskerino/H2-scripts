@@ -10,18 +10,18 @@ AVAILABLE_INTERFACES=($(ls /sys/class/net | grep -v lo))
 
 
 if [ "${#AVAILABLE_INTERFACES[@]}" -eq 0 ]; then
-    echo "❌ No available network interfaces found."
+    echo "Ingen interfaces blev fundet. stopper script"
     exit 1
 fi
 
 # Locate Netplan config
 NETPLAN_FILE=$(find /etc/netplan -name "*.yaml" | head -n 1)
 if [ -z "$NETPLAN_FILE" ]; then
-    echo "❌ No Netplan config file found in /etc/netplan."
+    echo "ingen Netplan fil blev fundet under /etc/netplan. script stopper"
     exit 1
 fi
 
-echo "==> Backing up existing Netplan config: $NETPLAN_FILE"
+echo "==> Backup af eksisterende Netplan konfig: $NETPLAN_FILE"
 sudo cp "$NETPLAN_FILE" "${NETPLAN_FILE}.bak.$(date +%F-%T)"
 
 CONFIG=$(cat <<EOF
@@ -36,19 +36,19 @@ USED_INTERFACES=()
 
 while true; do
     echo
-    echo "Available network interfaces:"
+    echo "Tilgængelige interfaces:"
     for i in "${!AVAILABLE_INTERFACES[@]}"; do
         echo "$((i+1)). ${AVAILABLE_INTERFACES[$i]}"
     done
 
-    read -p "Select an interface by number (or press ENTER to finish): " CHOICE
+    read -p "Vælg et interface ud fra nummer (Eller tryk ENTER for at forlade scriptet): " CHOICE
 
     if [[ -z "$CHOICE" ]]; then
         break
     fi
 
     if ! [[ "$CHOICE" =~ ^[0-9]+$ ]] || (( CHOICE < 1 || CHOICE > ${#AVAILABLE_INTERFACES[@]} )); then
-        echo "❌ Invalid selection. Try again."
+        echo "Forkert data, prøv igen."
         continue
     fi
 
@@ -56,21 +56,21 @@ while true; do
 
     # Prevent reuse
     if [[ " ${USED_INTERFACES[*]} " == *" $IFACE "* ]]; then
-        echo "⚠️  Interface $IFACE already configured. Choose a different one."
+        echo "Interface $IFACE har allerede en konfiguration. Den kan opdateres manuelt under $NETPLAN_FILE. Vælg et andet interface eller forlad scriptet."
         continue
     fi
 
     USED_INTERFACES+=("$IFACE")
 
-    read -p "Use DHCP for $IFACE? (yes/no): " USE_DHCP
-    if [[ "$USE_DHCP" =~ ^[Yy] ]]; then
+    read -p "Brug DHCP på $IFACE? (ja/nej): " USE_DHCP
+    if [[ "$USE_DHCP" =~ ^[Jj] ]]; then
         CONFIG+="
     $IFACE:
       dhcp4: true"
     else
-        read -p "Enter static IP for $IFACE (e.g., 192.168.1.50/24): " STATIC_IP
-        read -p "Enter gateway for $IFACE (or leave blank if none): " GATEWAY
-        read -p "Enter DNS servers (comma-separated or leave blank): " DNS
+        read -p "Indtast en statisk IP for $IFACE, efterfuldt af prefix. (f.eks: 192.168.1.50/24): " STATIC_IP
+        read -p "Indtast gateway for $IFACE (Eller efterlad den tom for ingen): " GATEWAY
+        read -p "Indtast DNS servere opdelt med kommaer (8.8.8.8, 9.9.9.9): " DNS
 
         CONFIG+="
     $IFACE:
@@ -91,23 +91,23 @@ while true; do
     fi
 done
 
-# If no interfaces selected
+# Hvis der ikke er valgt et interface
 if [ "${#USED_INTERFACES[@]}" -eq 0 ]; then
     echo "⚠️ No interfaces selected. Exiting."
     exit 1
 fi
 
-# Write the new config
+# Skriv ny config til fil
 echo "==> Writing new Netplan configuration to $NETPLAN_FILE..."
 echo "$CONFIG" | sudo tee "$NETPLAN_FILE" > /dev/null
 
-# Apply config
+# commit konfigurationen til netplan
 echo
 read -p "Do you want to apply the configuration now? (yes/no): " APPLY_NOW
 if [[ "$APPLY_NOW" =~ ^[Yy] ]]; then
-    echo "==> Applying Netplan config..."
+    echo "==> Tilføjer ny netplan konfig..."
     sudo netplan apply
-    echo "✅ Netplan configuration applied."
+    echo "Netplan konfiguration tilføjet."
 else
-    echo "⚠️ Netplan config not applied. You can run 'sudo netplan apply' manually."
+    echo "Netplan konfiguration blev ikke tilføjet. Brug 'sudo netplan apply' for manuelt at tilføje ændringerne."
 fi
