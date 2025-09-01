@@ -16,6 +16,7 @@ ufw allow from 10.0.0.0/8 to any port 23
 #Aktiverer ufw. OBS vær opmærksom på at det hele er opsat da, SSH adgang kan forsvinde hvis ikke opsat korrekt.
 ufw enable
 
+echo "telnet  stream  tcp     nowait  root    /usr/sbin/tcpd  /usr/sbin/telnetd" >> /etc/inetd.conf
 
 #OBS nedenstående sletter din telnet forbindelse igen.
 apt autoremove telnetd --purge
