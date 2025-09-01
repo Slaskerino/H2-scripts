@@ -1,6 +1,6 @@
 #!/bin/bash
-sudo apt update && sudo apt upgrade
-sudo apt install openssh-server openssh-client
+apt update && sudo apt upgrade
+apt install openssh-server openssh-client
 
 #Aktiver SSH genne port 22 ELLER giver SSH adgang igennem UFW igennem en subnet og port 22.
 ufw allow ssh
