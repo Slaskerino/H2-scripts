@@ -1,0 +1,195 @@
+#!/bin/bash
+
+# -----------------------------
+# CONFIGURATION (Edit these)
+# -----------------------------
+IMAGE_URL="https://i.kym-cdn.com/entries/icons/original/000/035/396/borat.jpg"
+VIDEO_URL="https://ia801303.us.archive.org/7/items/rick-astley-never-gonna-give-you-up-assets/rick-roll.gif"
+FTP_FILE_URLS=(
+    "https://fm.dk/media/xraiv33r/finansloven-for-2024.pdf"
+    "https://fm.dk/media/mmbgxwah/fl23a.pdf"
+)
+FTP_USER="ftpuser"
+FTP_PASS="Password1"
+
+# -----------------------------
+# Update & Install Dependencies
+# -----------------------------
+echo "[+] Updating system and installing packages..."
+sudo apt update && sudo apt upgrade -y
+sudo apt install apache2 vsftpd ufw wget unzip -y
+
+# -----------------------------
+# Setup Apache Web Server
+# -----------------------------
+echo "[+] Configuring Apache web server..."
+
+WEB_ROOT="/var/www/html"
+MEDIA_DIR="$WEB_ROOT/media"
+
+sudo mkdir -p "$MEDIA_DIR"
+sudo rm -f "$WEB_ROOT/index.html"
+
+# Download image and video
+echo "[+] Downloading media..."
+sudo wget -O "$MEDIA_DIR/background.jpg" "$IMAGE_URL"
+sudo wget -O "$MEDIA_DIR/video.gif" "$VIDEO_URL"
+
+# Create custom index.html
+echo "[+] Creating index.html..."
+cat <<EOF | sudo tee "$WEB_ROOT/index.html" > /dev/null
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Media Server</title>
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    /* Background image (fills the screen) */
+    img#bgImage {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+
+    /* GIF overlay */
+    img#gifOverlay {
+      position: fixed;
+      bottom: 50px;
+      right: 50px;
+      width: 300px; /* Adjust this size */
+      height: auto;
+      z-index: 1;
+    }
+
+    /* Text content */
+    .content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .text-box {
+      background-color: rgba(0, 0, 0, 0.6);  /* Semi-transparent black */
+      color: white;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      max-width: 80%;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Background Image -->
+  <img src="media/background.jpg" id="bgImage" alt="Background Image">
+
+  <!-- GIF Overlay -->
+  <img src="media/video.gif" id="gifOverlay" alt="GIF Animation">
+
+
+  <!-- Text Content -->
+  <div class="content">
+    <div class="text-box">
+      <h1>Velkommen til Denne ret seje hjemmeside</h1>
+      <p>Borat synes du er lækker og Rick er så glad for at se dig, at han ikke kan stoppe med at danse!</p>
+      <p>Borat er også glad for at se dig<P>
+      <P>Rigtig glad ( ͡° ͜ʖ ͡°)<p>
+    </div>
+  </div>
+
+</body>
+</html>
+
+EOF
+
+# Set permissions
+sudo chown -R www-data:www-data "$WEB_ROOT"
+
+# -----------------------------
+# Configure vsftpd for uploads
+# -----------------------------
+echo "[+] Configuring FTP server for write access..."
+
+sudo cp /etc/vsftpd.conf /etc/vsftpd.conf.bak
+
+sudo bash -c 'cat <<EOF > /etc/vsftpd.conf
+listen=YES
+listen_ipv6=NO
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+local_umask=022
+chroot_local_user=YES
+allow_writeable_chroot=YES
+pasv_enable=YES
+pasv_min_port=10000
+pasv_max_port=10100
+user_sub_token=\$USER
+local_root=/var/www/html
+EOF'
+
+# Restart FTP service
+sudo systemctl restart vsftpd
+
+# -----------------------------
+# Create FTP User
+# -----------------------------
+echo "[+] Creating FTP user..."
+
+sudo adduser --home /var/www/html --no-create-home --disabled-password --gecos "" "$FTP_USER"
+echo "$FTP_USER:$FTP_PASS" | sudo chpasswd
+
+# Setup FTP directory structure
+#FTP_DIR="/var/www/html"
+#sudo mkdir -p "$FTP_DIR"
+
+# Download files into FTP directory
+#echo "[+] Downloading FTP files..."
+#for url in "${FTP_FILE_URLS[@]}"; do
+#    sudo wget -P "$FTP_DIR" "$url"
+#done
+
+# Set ownership and permissions
+echo "[+] Setting permissions on Apache directory..."
+sudo chown -R "$FTP_USER:$FTP_USER" /var/www/html
+sudo chmod -R 777 /var/www/html
+
+# -----------------------------
+# Optional: Restrict SSH access
+# -----------------------------
+echo "[+] Disabling SSH access for FTP user (optional)..."
+echo "DenyUsers $FTP_USER" | sudo tee -a /etc/ssh/sshd_config
+sudo systemctl restart sshd
+
+# -----------------------------
+# Configure Firewall
+# -----------------------------
+echo "[+] Configuring UFW firewall..."
+sudo ufw allow OpenSSH
+sudo ufw allow 'Apache Full'
+sudo ufw allow 20:21/tcp
+sudo ufw allow 10000:10100/tcp
+sudo ufw --force enable
+
+# -----------------------------
+# Done
+# -----------------------------
+echo "✅ Setup complete!"
+echo "Web server available at: http://<your-server-ip>/"
+echo "FTP login:"
+echo "  Username: $FTP_USER"
+echo "  Password: $FTP_PASS"
