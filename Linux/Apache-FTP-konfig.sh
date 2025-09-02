@@ -153,16 +153,6 @@ echo "[+] Creating FTP user..."
 sudo adduser --home /var/www/html --no-create-home --disabled-password --gecos "" "$FTP_USER"
 echo "$FTP_USER:$FTP_PASS" | sudo chpasswd
 
-# Setup FTP directory structure
-#FTP_DIR="/var/www/html"
-#sudo mkdir -p "$FTP_DIR"
-
-# Download files into FTP directory
-#echo "[+] Downloading FTP files..."
-#for url in "${FTP_FILE_URLS[@]}"; do
-#    sudo wget -P "$FTP_DIR" "$url"
-#done
-
 # Set ownership and permissions
 echo "[+] Setting permissions on Apache directory..."
 sudo chown -R "$FTP_USER:$FTP_USER" /var/www/html
