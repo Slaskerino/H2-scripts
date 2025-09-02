@@ -169,7 +169,6 @@ sudo systemctl restart sshd
 # Configure Firewall
 # -----------------------------
 echo "[+] Configuring UFW firewall..."
-sudo ufw allow OpenSSH
 sudo ufw allow 'Apache Full'
 sudo ufw allow 20:21/tcp
 sudo ufw allow 10000:10100/tcp
