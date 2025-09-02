@@ -16,9 +16,11 @@ fi
 
 # Lokaliser netplan konfig fil
 NETPLAN_FILE=$(find /etc/netplan -name "*.yaml" | head -n 1)
+
 if [ -z "$NETPLAN_FILE" ]; then
-    echo "ingen Netplan fil blev fundet under /etc/netplan. script stopper"
-    exit 1
+    echo "Ingen Netplan-fil blev fundet. Opretter en ny under /etc/netplan/00-config.yaml..."
+    NETPLAN_FILE="/etc/netplan/00-config.yaml"
+    sudo touch "$NETPLAN_FILE"
 fi
 
 echo "==> Backup af eksisterende Netplan konfig: $NETPLAN_FILE"
