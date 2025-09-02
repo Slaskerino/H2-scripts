@@ -82,7 +82,9 @@ while true; do
 
         if [[ -n "$GATEWAY" ]]; then
             CONFIG+="
-      gateway4: $GATEWAY"
+      routes:
+        -   to: default
+            via: $GATEWAY"
         fi
 
         if [[ -n "$DNS" ]]; then
