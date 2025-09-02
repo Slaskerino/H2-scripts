@@ -91,7 +91,7 @@ restart_samba() {
     echo "Samba-tjenester er nu kørende og aktiveret ved opstart."
 }
 
-# Hovedprogram
+# Hovedprogram der bruger rækkefølgen af alle ovennævnte funktions.
 install_samba
 create_share_dir
 create_samba_users_auto
