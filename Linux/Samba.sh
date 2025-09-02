@@ -109,6 +109,10 @@ create_samba_users_auto
 configure_samba
 restart_samba
 
+#Giver adgang til Samba via UFW.
+echo "Åbner adgang for Samba i UFW"
+ufw allow Samba
+
 echo "Samba installation og konfiguration færdig!"
 echo "Share tilgængelig på: //$HOSTNAME/$SAMBASHARE_NAME"
 echo "Samba-brugere og passwords:"
