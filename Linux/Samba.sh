@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# ============================================
-# Script: setup_samba_auto.sh
-# Formål: Automatisk installation og konfiguration af Samba på Ubuntu
-#         inkl. automatisk opsætning af brugere og passwords
-# Understøttede versioner: 18.04, 22.04, 24.04
-# ============================================
+
+#Automatisk installation og konfiguration af Samba på Ubuntu server
+#         inkl. automatisk opsætning af to brugere med specifikke passwords
+
 
 # Stop scriptet ved fejl
 set -e
