@@ -6,7 +6,7 @@ apt update && sudo apt upgrade
 apt install openssh-server openssh-client
 apt install -y ufw
 
-#Aktiver SSH genne port 22 ELLER giver SSH adgang igennem UFW igennem en subnet og port 22.
+#Aktiver SSH gennem port 22 ELLER giver SSH adgang igennem UFW igennem en subnet og port 22.
 ufw allow ssh
 ufw allow from 10.0.0.0/8 to any port 22
 
@@ -24,5 +24,5 @@ ufw enable
 echo "telnet  stream  tcp     nowait  root    /usr/sbin/tcpd  /usr/sbin/telnetd" >> /etc/inetd.conf
 sudo systemctl restart inetd
 
-#OBS nedenstående sletter din telnet forbindelse igen.
+#######OBS nedenstående sletter din telnet forbindelse igen.#######
 apt autoremove telnetd --purge
