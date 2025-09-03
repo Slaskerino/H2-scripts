@@ -40,10 +40,28 @@ while true; do
     echo
     echo "Tilgængelige interfaces:"
     for i in "${!AVAILABLE_INTERFACES[@]}"; do
-        echo "$((i+1)). ${AVAILABLE_INTERFACES[$i]}"
+        IFACE_NAME="${AVAILABLE_INTERFACES[$i]}"
+        CONFIGURED=false
+        for used in "${USED_INTERFACES[@]}"; do
+            if [[ "$used" == "$IFACE_NAME" ]]; then
+                CONFIGURED=true
+                break
+            fi
+        done
+
+        if $CONFIGURED; then
+            echo "$((i+1)). $IFACE_NAME - Interface er konfigureret"
+        else
+            echo "$((i+1)). $IFACE_NAME"
+        fi
     done
 
-    read -p "Vælg et interface ud fra nummer (Eller tryk ENTER for at forlade scriptet): " CHOICE
+    if [ "${#USED_INTERFACES[@]}" -eq 0 ]; then
+        read -p "Vælg et interface ud fra nummer eller tryk ENTER for at forlade scriptet: " CHOICE
+    else
+        read -p "Vælg et andet interface, eller tryk ENTER for at afslutte konfigurationen: " CHOICE
+    fi
+
 
     if [[ -z "$CHOICE" ]]; then
         break
@@ -55,6 +73,8 @@ while true; do
     fi
 
     IFACE="${AVAILABLE_INTERFACES[$((CHOICE-1))]}"
+
+
 
     # Prevent reuse
     if [[ " ${USED_INTERFACES[*]} " == *" $IFACE "* ]]; then
@@ -70,7 +90,7 @@ while true; do
     $IFACE:
       dhcp4: true"
     else
-        read -p "Indtast en statisk IP for $IFACE, efterfuldt af prefix. (f.eks: 192.168.1.50/24): " STATIC_IP
+        read -p "Indtast en statisk IP for $IFACE, efterfuldt af prefix. (f.eks: 192.168.2.50/24): " STATIC_IP
         read -p "Indtast gateway for $IFACE (Eller efterlad den tom for ingen): " GATEWAY
         read -p "Indtast DNS servere opdelt med kommaer (8.8.8.8, 9.9.9.9): " DNS
 
