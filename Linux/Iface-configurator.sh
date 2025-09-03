@@ -1,6 +1,8 @@
 #!/bin/bash
 
 set -e
+declare -A INTERFACE_IPS
+
 
 echo "==> Multi Iface opdator (Netplan)"
 
@@ -50,11 +52,14 @@ while true; do
         done
 
         if $CONFIGURED; then
-            echo "$((i+1)). $IFACE_NAME - Interface er konfigureret"
+            IP="${INTERFACE_IPS[$IFACE_NAME]}"
+            echo "$((i+1)). $IFACE_NAME - Konfigureret - IP: ($IP)"
         else
-            echo "$((i+1)). $IFACE_NAME"
+            IP=$(ip -4 addr show "$IFACE_NAME" | grep -oP '(?<=inet\s)\d+(\.\d+){3}/\d+')
+            echo "$((i+1)). $IFACE_NAME - Ikke konfigureret - IP: ($IP)"
         fi
     done
+
 
     if [ "${#USED_INTERFACES[@]}" -eq 0 ]; then
         read -p "Vælg et interface ud fra nummer eller tryk ENTER for at forlade scriptet: " CHOICE
@@ -83,9 +88,12 @@ while true; do
     fi
 
     USED_INTERFACES+=("$IFACE")
+    INTERFACE_IPS["$IFACE"]="(ukendt)"
+
 
     read -p "Brug DHCP på $IFACE? (ja/nej): " USE_DHCP
     if [[ "$USE_DHCP" =~ ^[Jj] ]]; then
+        INTERFACE_IPS["$IFACE"]="DHCP"
         CONFIG+="
     $IFACE:
       dhcp4: true"
@@ -93,7 +101,7 @@ while true; do
         read -p "Indtast en statisk IP for $IFACE, efterfuldt af prefix. (f.eks: 192.168.2.50/24): " STATIC_IP
         read -p "Indtast gateway for $IFACE (Eller efterlad den tom for ingen): " GATEWAY
         read -p "Indtast DNS servere opdelt med kommaer (8.8.8.8, 9.9.9.9): " DNS
-
+        INTERFACE_IPS["$IFACE"]="$STATIC_IP"
         CONFIG+="
     $IFACE:
       dhcp4: no
