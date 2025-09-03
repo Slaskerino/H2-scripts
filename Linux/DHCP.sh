@@ -16,11 +16,11 @@ sed -i 's/^INTERFACESv4=".*"/INTERFACESv4="enp6s19"/' "$FILE"
 
 #Nederst laver vi en tee for at indtaste alt nedenstående data på samme tid inkl. linjeskift i filen dhcp.conf.
 tee -a /etc/dhcp/dhcpd.conf > /dev/null <<EOT
-subnet 192.168.1.0 netmask 255.255.255.0 {
-range 192.168.1.50 192.168.1.100;
+subnet 192.168.2.0 netmask 255.255.255.0 {
+range 192.168.2.50 192.168.2.100;
 option domain-name-servers 8.8.8.8;
 option subnet-mask 255.255.255.0;
-option routers 192.168.1.1;
+option routers 192.168.2.1;
 }
 EOT
 
