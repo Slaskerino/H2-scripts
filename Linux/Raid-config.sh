@@ -37,7 +37,7 @@ for DISK in "${DISKS[@]}"; do
     echo " - $DISK"
 done
 echo
-read -p "Er de listede diske korrekte? Tast 'ja' for at bekræfte" CONFIRM
+read -p "Er de listede diske korrekte? Tast 'ja' for at bekræfte: " CONFIRM
 
 if [[ "$CONFIRM" != "ja" ]]; then
     echo "Stopper script..."
