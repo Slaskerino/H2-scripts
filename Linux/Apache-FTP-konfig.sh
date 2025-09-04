@@ -187,7 +187,7 @@ for IFACE in $INTERFACES; do
     fi
 done
 
-# Samler streng med addresser til en komma sepereret linje
+# Samler streng med addresser til en komma sepereret linje med IFS
 
 IP_STRING=$(IFS=, ; echo "${IPS[*]}")
 
