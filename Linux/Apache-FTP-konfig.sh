@@ -94,7 +94,7 @@ cat <<EOF | sudo tee "$WEB_ROOT/index.html" > /dev/null
   </style>
 </head>
 <body>
-  <!-- Background Image -->
+  <!-- Baggrundsbillede -->
   <img src="media/background.jpg" id="bgImage" alt="Background Image">
 
   <!-- GIF Overlay -->
@@ -174,6 +174,8 @@ sudo ufw allow 20:21/tcp
 sudo ufw allow 10000:10100/tcp
 sudo ufw --force enable
 
+# finder IP addresser på alle interfaces på hosten
+
 INTERFACES=$(ip -o link show | awk -F': ' '{print $2}' | grep -v lo)
 
 IPS=()
@@ -181,11 +183,12 @@ IPS=()
 for IFACE in $INTERFACES; do
     IP=$(ip -4 addr show "$IFACE" | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
     if [[ -n "$IP" ]]; then
-        IPS+=("$IP")
+        IPS+=(" $IP")
     fi
 done
 
-# Join array with commas
+# Samler streng med addresser til en komma sepereret linje
+
 IP_STRING=$(IFS=, ; echo "${IPS[*]}")
 
 # -----------------------------
