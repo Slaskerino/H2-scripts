@@ -55,7 +55,7 @@ while true; do
             IP="${INTERFACE_IPS[$IFACE_NAME]}"
             echo "$((i+1)). $IFACE_NAME - Konfigureret - IP: ($IP)"
         else
-            IP=$(ip -4 addr show "$IFACE_NAME" | grep -oP '(?<=inet\s)\d+(\.\d+){3}/\d+')
+            IP=$(ip -4 addr show "$IFACE_NAME" | grep -oP '(?<=inet\s)\d+(\.\d+){3}/\d+' || true)
             echo "$((i+1)). $IFACE_NAME - Ikke konfigureret - IP: ($IP)"
         fi
     done
