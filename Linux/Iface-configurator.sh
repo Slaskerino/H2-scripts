@@ -81,9 +81,9 @@ while true; do
 
 
 
-    # Prevent reuse
+    # Undgå at konfigurere det samme interface 2 gange
     if [[ " ${USED_INTERFACES[*]} " == *" $IFACE "* ]]; then
-        echo "Interface $IFACE har allerede en konfiguration. Den kan opdateres manuelt under $NETPLAN_FILE. Vælg et andet interface eller forlad scriptet."
+        echo "Interface $IFACE har allerede en konfiguration. Den kan opdateres manuelt under $NETPLAN_FILE. Vælg et andet interface eller forlad scriptet og køre det igen."
         continue
     fi
 

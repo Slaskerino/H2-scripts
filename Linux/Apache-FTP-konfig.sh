@@ -107,7 +107,7 @@ cat <<EOF | sudo tee "$WEB_ROOT/index.html" > /dev/null
       <h1>Velkommen til Denne ret seje hjemmeside</h1>
       <p>Borat synes du er lækker og Rick er så glad for at se dig, at han ikke kan stoppe med at danse!</p>
       <p>Borat er også glad for at se dig<P>
-      <P>Rigtig glad ( ͡° ͜ʖ ͡°)<p>
+      <P>Rigtig glad ( ͡° ͜ʖ ͡° )<p>
     </div>
   </div>
 
