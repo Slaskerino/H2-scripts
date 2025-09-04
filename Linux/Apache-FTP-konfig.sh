@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# -----------------------------
-# CONFIGURATION (Edit these)
-# -----------------------------
+# Definer forskellige download links som henter indhold til hjemmesiden fra offenligt tilgængeligt indhold
+
 IMAGE_URL="https://i.kym-cdn.com/entries/icons/original/000/035/396/borat.jpg"
 VIDEO_URL="https://ia801303.us.archive.org/7/items/rick-astley-never-gonna-give-you-up-assets/rick-roll.gif"
+
 FTP_FILE_URLS=(
     "https://fm.dk/media/xraiv33r/finansloven-for-2024.pdf"
     "https://fm.dk/media/mmbgxwah/fl23a.pdf"
@@ -13,16 +13,16 @@ FTP_USER="ftpuser"
 FTP_PASS="Password1"
 
 # -----------------------------
-# Update & Install Dependencies
+# Updater & installer nødvendige pakker
 # -----------------------------
-echo "[+] Updating system and installing packages..."
+echo "[+] Opdaterer systemet og installerer pakker..."
 sudo apt update && sudo apt upgrade -y
 sudo apt install apache2 vsftpd ufw wget unzip -y
 
 # -----------------------------
-# Setup Apache Web Server
+# Konfigurer Apache Web Server
 # -----------------------------
-echo "[+] Configuring Apache web server..."
+echo "[+] Konfigurerer Apache web server..."
 
 WEB_ROOT="/var/www/html"
 MEDIA_DIR="$WEB_ROOT/media"
@@ -30,19 +30,19 @@ MEDIA_DIR="$WEB_ROOT/media"
 sudo mkdir -p "$MEDIA_DIR"
 sudo rm -f "$WEB_ROOT/index.html"
 
-# Download image and video
-echo "[+] Downloading media..."
+# Downloader billede og video med et get request
+echo "[+] Downloader medie filer..."
 sudo wget -O "$MEDIA_DIR/background.jpg" "$IMAGE_URL"
 sudo wget -O "$MEDIA_DIR/video.gif" "$VIDEO_URL"
 
-# Create custom index.html
-echo "[+] Creating index.html..."
+# Opretter ny index.html
+echo "[+] Opretter index.html..."
 cat <<EOF | sudo tee "$WEB_ROOT/index.html" > /dev/null
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Media Server</title>
+  <title>En fe hjemmeside</title>
   <style>
     body, html {
       height: 100%;
@@ -50,7 +50,7 @@ cat <<EOF | sudo tee "$WEB_ROOT/index.html" > /dev/null
       overflow: hidden;
       font-family: Arial, sans-serif;
     }
-    /* Background image (fills the screen) */
+    /* Baggrundsbillede (fylder hele skærmen) */
     img#bgImage {
       position: fixed;
       top: 0;
@@ -66,12 +66,12 @@ cat <<EOF | sudo tee "$WEB_ROOT/index.html" > /dev/null
       position: fixed;
       bottom: 50px;
       right: 50px;
-      width: 300px; /* Adjust this size */
+      width: 300px; 
       height: auto;
       z-index: 1;
     }
 
-    /* Text content */
+    /* Tekst indhold */
     .content {
       position: relative;
       z-index: 2;
@@ -83,7 +83,7 @@ cat <<EOF | sudo tee "$WEB_ROOT/index.html" > /dev/null
     }
 
     .text-box {
-      background-color: rgba(0, 0, 0, 0.6);  /* Semi-transparent black */
+      background-color: rgba(0, 0, 0, 0.6);  /* Semi-transparent sort */
       color: white;
       padding: 30px 40px;
       border-radius: 12px;
@@ -116,13 +116,13 @@ cat <<EOF | sudo tee "$WEB_ROOT/index.html" > /dev/null
 
 EOF
 
-# Set permissions
+# Opdater rettigheder til at give brugeren (og gruppen) www-data ejerskab over webroot stien (/var/www/)
 sudo chown -R www-data:www-data "$WEB_ROOT"
 
 # -----------------------------
-# Configure vsftpd for uploads
+# Konfigurerer vsftpd til at tillade uploads fra brugeren "ftpuser"
 # -----------------------------
-echo "[+] Configuring FTP server for write access..."
+echo "[+] Konfigurerer FTP server..."
 
 sudo cp /etc/vsftpd.conf /etc/vsftpd.conf.bak
 
@@ -142,43 +142,57 @@ user_sub_token=\$USER
 local_root=/var/www/html
 EOF'
 
-# Restart FTP service
+# Genstart FTP service
 sudo systemctl restart vsftpd
 
 # -----------------------------
-# Create FTP User
+# Opret vores FTP bruger
 # -----------------------------
-echo "[+] Creating FTP user..."
+echo "[+] Opretter FTP bruger..."
 
 sudo adduser --home /var/www/html --no-create-home --disabled-password --gecos "" "$FTP_USER"
 echo "$FTP_USER:$FTP_PASS" | sudo chpasswd
 
-# Set ownership and permissions
-echo "[+] Setting permissions on Apache directory..."
+# Definer ejerskab samt rettigheder
+echo "[+] Definerer ejerskab samt rettigheder til ftp adgang..."
 sudo chown -R "$FTP_USER:$FTP_USER" /var/www/html
 sudo chmod -R 777 /var/www/html
 
 # -----------------------------
-# Optional: Restrict SSH access
+# Nægt adgang for FTP brugeren at kunne logge på med ssh 
 # -----------------------------
-echo "[+] Disabling SSH access for FTP user (optional)..."
+echo "[+] Fjerner SSH adgang for FTP bruger..."
 echo "DenyUsers $FTP_USER" | sudo tee -a /etc/ssh/sshd_config
 sudo systemctl restart sshd
 
 # -----------------------------
-# Configure Firewall
+# Konfigurerer firewall med ret åben adgang
 # -----------------------------
-echo "[+] Configuring UFW firewall..."
+echo "[+] Konfigurerer UFW firewall..."
 sudo ufw allow 'Apache Full'
 sudo ufw allow 20:21/tcp
 sudo ufw allow 10000:10100/tcp
 sudo ufw --force enable
 
+INTERFACES=$(ip -o link show | awk -F': ' '{print $2}' | grep -v lo)
+
+IPS=()
+
+for IFACE in $INTERFACES; do
+    IP=$(ip -4 addr show "$IFACE" | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+    if [[ -n "$IP" ]]; then
+        IPS+=("$IP")
+    fi
+done
+
+# Join array with commas
+IP_STRING=$(IFS=, ; echo "${IPS[*]}")
+
 # -----------------------------
-# Done
+# Færdig
 # -----------------------------
-echo "✅ Setup complete!"
-echo "Web server available at: http://<your-server-ip>/"
+echo "Konfiguration af web server samt FTP adgang er færdig!"
+echo "Web server available at: $IP_STRING"
 echo "FTP login:"
 echo "  Username: $FTP_USER"
 echo "  Password: $FTP_PASS"
