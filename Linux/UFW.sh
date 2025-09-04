@@ -15,10 +15,6 @@ fi
 #OBS# Vær opmærksom på at du ikke kan etablere forbindelse via SSH eller Telnet, 
 #hvis du aktiverer UFW uden at have allowed SSH eller telnet.
 
-# Tillad altid SSH først (port 22) for ikke at miste SSH forbindelsen.
-echo "Sikrer at SSH altid er tilladt..."
-sudo ufw allow ssh
-
 # Tjek om UFW er aktiv, hvis den ikke er aktiv, bliver den aktiveret.
 STATUS=$(sudo ufw status | grep -i "Status:" | awk '{print $2}')
 
