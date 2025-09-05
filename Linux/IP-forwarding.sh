@@ -11,7 +11,7 @@ sysctl -p
 
 #Installation af IP tables.
 echo "Installerer IP-tables"
-apt install -y iptables-persistent
+apt install iptables-persistent -y
 
 
 #Her konfigureres package forwaring fra LAN til WAN.
