@@ -25,8 +25,10 @@ if [ -z "$NETPLAN_FILE" ]; then
     sudo touch "$NETPLAN_FILE"
 fi
 
+NETPLAN_BACKUP_FILE="${NETPLAN_FILE}.bak.$(date +%F-%T)"
+
 echo "==> Backup af eksisterende Netplan konfig: $NETPLAN_FILE"
-sudo cp "$NETPLAN_FILE" "${NETPLAN_FILE}.bak.$(date +%F-%T)"
+sudo cp "$NETPLAN_FILE" "$NETPLAN_BACKUP_FILE"
 
 CONFIG=$(cat <<EOF
 network:
@@ -142,4 +144,14 @@ if [[ "$APPLY_NOW" =~ ^[Jj] ]]; then
     echo "Netplan konfiguration tilføjet."
 else
     echo "Netplan konfiguration blev ikke tilføjet. Brug 'sudo netplan apply' for manuelt at tilføje ændringerne."
+    exit 1
+fi
+
+read -p "Vil du slette backup filen af netplanen? (ja/nej): " RM_BACKUP
+if [[ "$RM_BACKUP" =~ ^[Jj] ]]; then
+    echo "Sletter backup af netplanen"
+    sudo rm "$NETPLAN_BACKUP_FILE"
+else
+    echo "Beholder backup"
+    exit 1
 fi
