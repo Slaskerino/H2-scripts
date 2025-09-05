@@ -9,7 +9,7 @@ fi
 echo "Aktiverer ændringen."
 sysctl -p
 
-#Installation af IP tables.
+#Installation af IP tables-persistent så vi kan gemme iptables, selv efter en reboot.
 echo "Installerer IP-tables"
 apt install iptables-persistent -y
 
