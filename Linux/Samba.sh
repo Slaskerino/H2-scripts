@@ -9,7 +9,7 @@
 set -e
 
 # Variabler
-SHARE_DIR="share"
+SHARE_DIR="/home/share"
 SAMBASHARE_NAME="my-samba-share"
 USERS=("tom" "harry")       # Brugere til Samba
 USER_PASSWORDS=("Password1" "Password1")  # Corresponding passwords

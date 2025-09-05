@@ -168,6 +168,35 @@ sudo systemctl restart sshd
 # -----------------------------
 # Konfigurerer firewall med ret åben adgang
 # -----------------------------
+
+echo "[+] Konfigurerer iptables firewall..."
+
+# Allow HTTP and HTTPS
+sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Allow FTP (ports 20, 21)
+sudo iptables -A INPUT -p tcp --dport 20 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 21 -j ACCEPT
+
+# Allow passive FTP ports
+sudo iptables -A INPUT -p tcp --dport 10000:10100 -j ACCEPT
+
+# Allow established/related traffic
+sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Allow loopback
+sudo iptables -A INPUT -i lo -j ACCEPT
+
+# Allow SSH
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+# Drop all other incoming traffic
+#sudo iptables -P INPUT DROP
+#sudo iptables -P FORWARD DROP
+
+
+
 echo "[+] Konfigurerer UFW firewall..."
 sudo ufw allow 'Apache Full'
 sudo ufw allow 20:21/tcp
