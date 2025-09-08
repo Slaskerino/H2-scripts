@@ -1,5 +1,5 @@
 #!/bin/bash
-# Setup Squid Proxy på 192.168.1.1
+# Setup Squid Proxy på 192.168.2.1
 
 # Stop script ved fejl
 set -e
@@ -20,10 +20,10 @@ EOF
 # Skriv ny squid.conf
 cat <<EOF >/etc/squid/squid.conf
 # Squid proxy config
-http_port 192.168.1.1:3269
+http_port 192.168.2.1:3269
 
 # Adgangskontrol
-acl localnet src 192.168.1.0/24
+acl localnet src 192.168.2.0/24
 acl blacklist dstdomain "/etc/squid/blacklist.acl"
 
 http_access deny blacklist
@@ -44,4 +44,4 @@ chmod 644 /etc/squid/blacklist.acl
 systemctl restart squid
 systemctl enable squid
 
-echo "En solid Squid proxy er sat op på 192.168.1.1:3269"
+echo "En solid Squid proxy er sat op på 192.168.2.1:3269"
