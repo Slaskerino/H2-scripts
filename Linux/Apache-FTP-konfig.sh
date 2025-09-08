@@ -125,9 +125,6 @@ cat <<EOF | tee "$WEB_ROOT/index.html" > /dev/null
 
 EOF
 
-# Opdater rettigheder til at give brugeren (og gruppen) www-data ejerskab over webroot stien (/var/www/)
-chown -R www-data:www-data "$WEB_ROOT"
-
 # -----------------------------
 # Konfigurerer vsftpd til at tillade uploads fra brugeren "ftpuser"
 # -----------------------------
@@ -168,6 +165,8 @@ adduser --home /var/www/html --no-create-home --disabled-password --gecos "" "$F
 echo "$FTP_USER:$FTP_PASS" | chpasswd
 
 # Definer ejerskab samt rettigheder
+# Dette er MEGET åbne rettigheder og skal ikke lukkes ud til resten af verdenen. 
+# I den rigtige verden ville man nok løse dette ved at benytte en gruppe til at give adgang, men her går vi med denne løsning.
 echo "[+] Definerer ejerskab samt rettigheder til ftp adgang..."
 chown -R "$FTP_USER:$FTP_USER" /var/www/html
 chmod -R 777 /var/www/html
@@ -180,7 +179,7 @@ echo "DenyUsers $FTP_USER" | tee -a /etc/ssh/sshd_config
 systemctl restart sshd
 
 # -----------------------------
-# Konfigurerer iptables til at kunne acceptere http, https trafik
+# Konfigurerer iptables til at kunne acceptere http, https og FTP trafik
 # -----------------------------
 
 echo "[+] Konfigurerer iptables..."
