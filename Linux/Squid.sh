@@ -44,4 +44,13 @@ chmod 644 /etc/squid/blacklist.acl
 systemctl restart squid
 systemctl enable squid
 
+#Åbner adgang i firewall til porten.
+# Tillad indgående TCP trafik på port 3269
+sudo iptables -A INPUT -p tcp --dport 3269 -j ACCEPT
+
+# Gem reglerne permanent (på Ubuntu/Debian)
+sudo apt install -y iptables-persistent
+sudo netfilter-persistent save
+
+
 echo "En solid Squid proxy er sat op på 192.168.2.1:3269"
