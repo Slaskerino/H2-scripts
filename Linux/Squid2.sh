@@ -20,7 +20,7 @@ EOF
 # Skriv ny squid.conf
 cat <<EOF >/etc/squid/squid.conf
 # Squid proxy config
-http_port 192.168.1.11:3128
+http_port 192.168.1.1:3128
 
 # Adgangskontrol
 acl localnet src 192.168.1.0/24
