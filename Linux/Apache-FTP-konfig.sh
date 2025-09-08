@@ -22,8 +22,8 @@ FTP_PASS="Password1"
 # Updater & installer nødvendige pakker
 # -----------------------------
 echo "[+] Opdaterer systemet og installerer pakker..."
-sudo apt update && sudo apt upgrade -y
-sudo apt install apache2 vsftpd ufw wget unzip -y
+apt update && apt upgrade -y
+apt install apache2 vsftpd wget unzip -y
 
 # -----------------------------
 # Konfigurer Apache Web Server
@@ -34,19 +34,19 @@ WEB_ROOT="/var/www/html"
 MEDIA_DIR="$WEB_ROOT/media"
 
 # Opretter mappe til medie filer
-sudo mkdir -p "$MEDIA_DIR"
+mkdir -p "$MEDIA_DIR"
 
 # Fjerner index.html som Apache selv opretter ved installation
-sudo rm -f "$WEB_ROOT/index.html"
+rm -f "$WEB_ROOT/index.html"
 
 # Downloader billede og video med et get request
 echo "[+] Downloader medie filer..."
-sudo wget -O "$MEDIA_DIR/background.jpg" "$IMAGE_URL"
-sudo wget -O "$MEDIA_DIR/video.gif" "$VIDEO_URL"
+wget -O "$MEDIA_DIR/background.jpg" "$IMAGE_URL"
+wget -O "$MEDIA_DIR/video.gif" "$VIDEO_URL"
 
 # Opretter ny index.html samt skriver indhold til filen.
 echo "[+] Opretter index.html..."
-cat <<EOF | sudo tee "$WEB_ROOT/index.html" > /dev/null
+cat <<EOF | tee "$WEB_ROOT/index.html" > /dev/null
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -126,16 +126,16 @@ cat <<EOF | sudo tee "$WEB_ROOT/index.html" > /dev/null
 EOF
 
 # Opdater rettigheder til at give brugeren (og gruppen) www-data ejerskab over webroot stien (/var/www/)
-sudo chown -R www-data:www-data "$WEB_ROOT"
+chown -R www-data:www-data "$WEB_ROOT"
 
 # -----------------------------
 # Konfigurerer vsftpd til at tillade uploads fra brugeren "ftpuser"
 # -----------------------------
 echo "[+] Konfigurerer FTP server..."
 
-sudo cp /etc/vsftpd.conf /etc/vsftpd.conf.bak
+cp /etc/vsftpd.conf /etc/vsftpd.conf.bak
 
-sudo bash -c 'cat <<EOF > /etc/vsftpd.conf
+bash -c 'cat <<EOF > /etc/vsftpd.conf
 listen=YES
 listen_ipv6=NO
 anonymous_enable=NO
@@ -152,7 +152,7 @@ local_root=/var/www/html
 EOF'
 
 # Genstart FTP service
-sudo systemctl restart vsftpd
+systemctl restart vsftpd
 
 # -----------------------------
 # Opret vores FTP bruger
@@ -162,22 +162,22 @@ echo "[+] Opretter FTP bruger..."
 
 # Brugeren får roden af web mappen som hjemmemappe, vi opretter ikke nogen ny mappe til brugeren og 
 # vælger --disabled-password for at kunne oprette et password uden output til stout
-sudo adduser --home /var/www/html --no-create-home --disabled-password --gecos "" "$FTP_USER"
+adduser --home /var/www/html --no-create-home --disabled-password --gecos "" "$FTP_USER"
 
 # opretter et password til ftp brugeren
-echo "$FTP_USER:$FTP_PASS" | sudo chpasswd
+echo "$FTP_USER:$FTP_PASS" | chpasswd
 
 # Definer ejerskab samt rettigheder
 echo "[+] Definerer ejerskab samt rettigheder til ftp adgang..."
-sudo chown -R "$FTP_USER:$FTP_USER" /var/www/html
-sudo chmod -R 777 /var/www/html
+chown -R "$FTP_USER:$FTP_USER" /var/www/html
+chmod -R 777 /var/www/html
 
 # -----------------------------
 # Nægt adgang for FTP brugeren at kunne logge på med ssh 
 # -----------------------------
 echo "[+] Fjerner SSH adgang for FTP bruger..."
-echo "DenyUsers $FTP_USER" | sudo tee -a /etc/ssh/sshd_config
-sudo systemctl restart sshd
+echo "DenyUsers $FTP_USER" | tee -a /etc/ssh/sshd_config
+systemctl restart sshd
 
 # -----------------------------
 # Konfigurerer iptables til at kunne acceptere http, https trafik
@@ -186,24 +186,24 @@ sudo systemctl restart sshd
 echo "[+] Konfigurerer iptables..."
 
 # Tillad HTTP og HTTPS
-sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
-sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 
 # Tillad FTP
-sudo iptables -A INPUT -p tcp --dport 20 -j ACCEPT
-sudo iptables -A INPUT -p tcp --dport 21 -j ACCEPT
+iptables -A INPUT -p tcp --dport 20 -j ACCEPT
+iptables -A INPUT -p tcp --dport 21 -j ACCEPT
 
 # Tillad passive FTP porte
-sudo iptables -A INPUT -p tcp --dport 10000:10100 -j ACCEPT
+iptables -A INPUT -p tcp --dport 10000:10100 -j ACCEPT
 
 # Tillad etablerede og realateret trafik til FTP
-sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # Tillad intern kommunikation gennem localhost
-sudo iptables -A INPUT -i lo -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
 
 # Gemmer nye iptables regler til at være persistent gennem reboots.
-sudo iptables-save | sudo tee /etc/iptables/rules.v4 > /dev/null
+iptables-save | tee /etc/iptables/rules.v4 > /dev/null
 
 
 # finder IP addresser på alle interfaces på hosten
