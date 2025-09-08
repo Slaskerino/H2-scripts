@@ -2,6 +2,12 @@
 
 # Definer forskellige download links som henter indhold til hjemmesiden fra offenligt tilgængeligt indhold
 
+# Tjekker om scriptet bliver kørt som root.
+if [[ $EUID -ne 0 ]]; then
+  echo "Fejl: Dette script skal køres med sudo eller som root." >&2
+  exit 1
+fi
+
 IMAGE_URL="https://i.kym-cdn.com/entries/icons/original/000/035/396/borat.jpg"
 VIDEO_URL="https://ia801303.us.archive.org/7/items/rick-astley-never-gonna-give-you-up-assets/rick-roll.gif"
 
