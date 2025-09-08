@@ -130,8 +130,10 @@ EOF
 # -----------------------------
 echo "[+] Konfigurerer FTP server..."
 
+# Laver backup af konfigurations filen
 cp /etc/vsftpd.conf /etc/vsftpd.conf.bak
 
+# Skriver ny konfigurations fil. 
 bash -c 'cat <<EOF > /etc/vsftpd.conf
 listen=YES
 listen_ipv6=NO
@@ -140,7 +142,6 @@ local_enable=YES
 write_enable=YES
 local_umask=022
 chroot_local_user=YES
-allow_writeable_chroot=YES
 pasv_enable=YES
 pasv_min_port=10000
 pasv_max_port=10100
@@ -183,6 +184,8 @@ systemctl restart sshd
 # -----------------------------
 
 echo "[+] Konfigurerer iptables..."
+
+apt install iptables-persistent
 
 # Tillad HTTP og HTTPS
 iptables -A INPUT -p tcp --dport 80 -j ACCEPT
