@@ -8,7 +8,7 @@ set -e
 SQUID_CONF="/etc/squid/squid.conf"
 SQUID_BACKUP="/etc/squid/squid.conf.factory"
 SQUID_DENY="/etc/squid/deniedsites.squid"
-LISTEN_IP="192.168.2.11"
+LISTEN_IP="192.168.2.1"
 LISTEN_PORT="3269"
 LAN_NET="192.168.2.0/24"
 CACHE_MEM="256 MB"
