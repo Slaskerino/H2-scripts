@@ -27,7 +27,10 @@ echo "[+] Konfigurerer Apache web server..."
 WEB_ROOT="/var/www/html"
 MEDIA_DIR="$WEB_ROOT/media"
 
+# Opretter mappe til medie filer
 sudo mkdir -p "$MEDIA_DIR"
+
+# Fjerner index.html som Apache selv opretter ved installation
 sudo rm -f "$WEB_ROOT/index.html"
 
 # Downloader billede og video med et get request
@@ -35,7 +38,7 @@ echo "[+] Downloader medie filer..."
 sudo wget -O "$MEDIA_DIR/background.jpg" "$IMAGE_URL"
 sudo wget -O "$MEDIA_DIR/video.gif" "$VIDEO_URL"
 
-# Opretter ny index.html
+# Opretter ny index.html samt skriver indhold til filen.
 echo "[+] Opretter index.html..."
 cat <<EOF | sudo tee "$WEB_ROOT/index.html" > /dev/null
 <!DOCTYPE html>
@@ -150,7 +153,12 @@ sudo systemctl restart vsftpd
 # -----------------------------
 echo "[+] Opretter FTP bruger..."
 
+
+# Brugeren får roden af web mappen som hjemmemappe, vi opretter ikke nogen ny mappe til brugeren og 
+# vælger --disabled-password for at kunne oprette et password uden output til stout
 sudo adduser --home /var/www/html --no-create-home --disabled-password --gecos "" "$FTP_USER"
+
+# opretter et password til ftp brugeren
 echo "$FTP_USER:$FTP_PASS" | sudo chpasswd
 
 # Definer ejerskab samt rettigheder
@@ -166,45 +174,33 @@ echo "DenyUsers $FTP_USER" | sudo tee -a /etc/ssh/sshd_config
 sudo systemctl restart sshd
 
 # -----------------------------
-# Konfigurerer firewall med ret åben adgang
+# Konfigurerer iptables til at kunne acceptere http, https trafik
 # -----------------------------
 
-echo "[+] Konfigurerer iptables firewall..."
+echo "[+] Konfigurerer iptables..."
 
-# Allow HTTP and HTTPS
+# Tillad HTTP og HTTPS
 sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 
-# Allow FTP (ports 20, 21)
+# Tillad FTP
 sudo iptables -A INPUT -p tcp --dport 20 -j ACCEPT
 sudo iptables -A INPUT -p tcp --dport 21 -j ACCEPT
 
-# Allow passive FTP ports
+# Tillad passive FTP porte
 sudo iptables -A INPUT -p tcp --dport 10000:10100 -j ACCEPT
 
-# Allow established/related traffic
+# Tillad etablerede og realateret trafik til FTP
 sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-# Allow loopback
+# Tillad intern kommunikation gennem localhost
 sudo iptables -A INPUT -i lo -j ACCEPT
 
-# Allow SSH
-sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+# Gemmer nye iptables regler til at være persistent gennem reboots.
+sudo iptables-save | sudo tee /etc/iptables/rules.v4 > /dev/null
 
-# Drop all other incoming traffic
-#sudo iptables -P INPUT DROP
-#sudo iptables -P FORWARD DROP
-
-
-
-echo "[+] Konfigurerer UFW firewall..."
-sudo ufw allow 'Apache Full'
-sudo ufw allow 20:21/tcp
-sudo ufw allow 10000:10100/tcp
-sudo ufw --force enable
 
 # finder IP addresser på alle interfaces på hosten
-
 INTERFACES=$(ip -o link show | awk -F': ' '{print $2}' | grep -v lo)
 
 IPS=()
@@ -217,14 +213,13 @@ for IFACE in $INTERFACES; do
 done
 
 # Samler streng med addresser til en komma sepereret linje med IFS
-
 IP_STRING=$(IFS=, ; echo "${IPS[*]}")
 
 # -----------------------------
 # Færdig
 # -----------------------------
 echo "Konfiguration af web server samt FTP adgang er færdig!"
-echo "Web server available at: $IP_STRING"
+echo "Din fede nye hjemmeside/web server kan ses via: $IP_STRING"
 echo "FTP login:"
 echo "  Username: $FTP_USER"
 echo "  Password: $FTP_PASS"
