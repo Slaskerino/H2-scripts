@@ -142,6 +142,7 @@ local_enable=YES
 write_enable=YES
 local_umask=022
 chroot_local_user=YES
+allow_writeable_chroot=YES
 pasv_enable=YES
 pasv_min_port=10000
 pasv_max_port=10100
