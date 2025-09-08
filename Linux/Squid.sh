@@ -44,4 +44,4 @@ chmod 644 /etc/squid/blacklist.acl
 systemctl restart squid
 systemctl enable squid
 
-echo "✅ Squid proxy er sat op på 192.168.1.11:3128"
+echo "✅ Squid proxy er sat op på 192.168.1.11:3269"
