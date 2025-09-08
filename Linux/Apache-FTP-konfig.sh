@@ -228,7 +228,7 @@ IP_STRING=$(IFS=, ; echo "${IPS[*]}")
 # Færdig
 # -----------------------------
 echo "Konfiguration af web server samt FTP adgang er færdig!"
-echo "Din fede nye hjemmeside/web server kan ses via: $IP_STRING"
+echo "Din fede nye hjemmeside/web server kan ses via:$IP_STRING"
 echo "FTP login:"
 echo "  Username: $FTP_USER"
 echo "  Password: $FTP_PASS"
