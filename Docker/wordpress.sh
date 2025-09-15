@@ -1,12 +1,11 @@
 #!/bin/bash
 
+# Stop scriptet ved fejl
+set -e
+
 #Tjek om Docker kører
 docker --version
 docker compose version
-
-#Hvis ikke, installer med
-apt update && apt install -y docker.io docker-compose
-systemctl enable --now docker
 
 #Lav en projektmappe ved navn wordpress
 mkdir ~/wordpress && cd ~/wordpress
