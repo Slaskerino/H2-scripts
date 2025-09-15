@@ -12,6 +12,8 @@ systemctl enable --now docker
 mkdir ~/wordpress && cd ~/wordpress
 
 #Opretter en docker-compose.yml fil
+
+cat <<EOF | tee "docker-compose.yml" > /dev/null
 version: '3.9'
 
 services:
@@ -45,6 +47,7 @@ volumes:
   db_data: {}
   wp_data: {}
 
+EOF
 #Starter Wordpress
 docker compose up -d
 
