@@ -5,7 +5,7 @@ services:
     image: nginx:latest 
     container_name: nginx_bridge 
     ports: 
-      - "8081:80"   # Tilgås på http://host-ip:8080 
+      - "8082:80"   # Tilgås på http://host-ip:8080 
     networks: 
       - mybridge 
  
