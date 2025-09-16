@@ -23,6 +23,7 @@ services:
 networks: 
   mymacvlan: 
     driver: macvlan 
+    name: mymacvlan
     driver_opts: 
       parent: enp6s18   # skift til dit rigtige netværksinterface 
     ipam: 
