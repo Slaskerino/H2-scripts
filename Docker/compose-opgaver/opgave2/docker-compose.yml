@@ -1,0 +1,15 @@
+version: "3.9" 
+services: 
+  nginx: 
+    image: nginx:latest 
+    container_name: nginx_host 
+    network_mode: host 
+    # Tilgås direkte via http://192.168.1.100:80 
+  db: 
+    image: mysql:8.0 
+    container_name: mysql_host 
+    network_mode: host 
+    environment: 
+      MYSQL_ROOT_PASSWORD: rootpass 
+      MYSQL_DATABASE: testdb 
+      # Bemærk: portkonflikter kan opstå, hvis andre services bruger samme porte
