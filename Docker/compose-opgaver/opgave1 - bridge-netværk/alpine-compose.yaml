@@ -17,10 +17,3 @@ services:
       MYSQL_DATABASE: testdb 
     networks: 
       - mybridge
- 
-networks: 
-  mybridge: 
-    driver: bridge 
-    ipam: 
-      config: 
-        - subnet: 172.25.0.0/16 
