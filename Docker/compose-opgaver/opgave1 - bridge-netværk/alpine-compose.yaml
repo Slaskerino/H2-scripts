@@ -3,23 +3,23 @@ version: "3.9"
 services: 
   nginx: 
     image: nginx:alpine 
-    container_name: nginx_bridge 
+    container_name: nginx_bridge2 
     ports: 
       - "8082:80"   # Tilgås på http://host-ip:8080 
     networks: 
-      - mybridge 
+      - mybridge2 
  
   db: 
     image: mysql:8.0 
-    container_name: mysql_bridge 
+    container_name: mysql_bridge2 
     environment: 
       MYSQL_ROOT_PASSWORD: rootpass 
       MYSQL_DATABASE: testdb 
     networks: 
-      - mybridge 
+      - mybridge2 
  
 networks: 
-  mybridge: 
+  mybridge2: 
     driver: bridge 
     ipam: 
       config: 
