@@ -1,0 +1,26 @@
+version: "3.9" 
+ 
+services: 
+  nginx: 
+    image: nginx:latest 
+    container_name: nginx_bridge 
+    ports: 
+      - "8081:80"   # Tilgås på http://host-ip:8080 
+    networks: 
+      - mybridge 
+ 
+  db: 
+    image: mysql:8.0 
+    container_name: mysql_bridge 
+    environment: 
+      MYSQL_ROOT_PASSWORD: rootpass 
+      MYSQL_DATABASE: testdb 
+    networks: 
+      - mybridge 
+ 
+networks: 
+  mybridge: 
+    driver: bridge 
+    ipam: 
+      config: 
+        - subnet: 172.20.0.0/16 
