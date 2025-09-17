@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+ side1:
+  image: nginx:alpine
+  volumes:
+  - ./side1:/usr/share/nginx/html:ro
+  networks:
+    - webnet
+
+ side2:
+  image: nginx:alpine
+  volumes:
+    - ./side2:/usr/share/nginx/html:ro
+  networks:
+    - webnet
+
+ side3:
+  image: nginx:alpine
+  volumes:
+    - ./side3:/usr/share/nginx/html:ro
+  networks:
+    - webnet
+
+ reverse-proxy:
+  image: nginx:alpine
+  volumes:
+    - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+  ports:
+    - "80:80"
+  depends_on:
+    - side1
+    - side2
+    - side3
+  networks:
+    - webnet
+
+networks:
+ webnet:
