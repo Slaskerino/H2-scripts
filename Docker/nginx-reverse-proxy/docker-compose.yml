@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    networks:
+      macvlan_net:
+        ipv4_address: 10.0.10.21
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"   # Admin UI
+    environment:
+      TZ: "UTC"
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    dns:
+      - 10.0.10.11
+
+networks:
+  macvlan_net:
+    driver: macvlan
+    driver_opts:
+      parent: enp6s18   
+    ipam:
+      config:
+        - subnet: 10.0.10.0/24
+          gateway: 10.0.10.2
