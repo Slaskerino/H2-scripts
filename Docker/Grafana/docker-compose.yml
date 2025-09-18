@@ -19,4 +19,4 @@ volumes:
 
 networks:
   grafnet:
-    external: true
+  
