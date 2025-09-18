@@ -12,11 +12,11 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
     networks:
-      - webnet
+      - grafnet
 
 volumes:
   grafana-storage:
 
 networks:
-  webnet:
+  grafnet:
     external: true
