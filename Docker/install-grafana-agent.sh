@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3001:3001"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - webnet
+
+volumes:
+  grafana-storage:
+
+networks:
+  webnet:
+    external: true
