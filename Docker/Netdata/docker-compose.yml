@@ -5,8 +5,7 @@ services:
     image: netdata/netdata:stable
     container_name: netdata
     restart: unless-stopped
-    ports:
-      - "19999:19999"
+    network_mode: host
     cap_add:
       - SYS_PTRACE
       - SYS_ADMIN
@@ -21,14 +20,8 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /etc/os-release:/host/etc/os-release:ro
-    networks:
-      - netdatabridge
 
 volumes:
   netdataconfig:
   netdatalib:
   netdatacache:
-
-networks:
-  netdatabridge:
-    
