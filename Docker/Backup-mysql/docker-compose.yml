@@ -1,0 +1,41 @@
+version: "3.8"   # Docker Compose filversion
+
+services:
+  mysql:
+    image: mysql:8                # Bruger den officielle MySQL version 8 image
+    container_name: mydb          # Containeren får navnet "mydb"
+    restart: unless-stopped       # Starter automatisk op igen, medmindre du stopper den manuelt
+    environment:
+      MYSQL_ROOT_PASSWORD: supersecret   # Root-password til MySQL
+      MYSQL_DATABASE: appdb              # Opretter databasen "appdb" automatisk ved første start
+    volumes:
+      - mydata:/var/lib/mysql     # Binder Docker volume "mydata" til MySQLs datamappe
+
+  mysql-backup:
+    image: fradelg/mysql-cron-backup     # Image med mysqldump + cron indbygget
+    container_name: mydb-backup          # Containeren får navnet "mydb-backup"
+    restart: unless-stopped              # Starter automatisk igen hvis den fejler eller system genstarter
+    environment:
+      # Forbindelsesinfo til din MySQL container
+      MYSQL_HOST: mydb                   # Host = service-navnet på MySQL-containeren
+      MYSQL_USER: root                   # Bruger root til backup
+      MYSQL_PASS: supersecret            # Password matcher MYSQL_ROOT_PASSWORD fra mysql-containeren
+      MYSQL_PORT: 3306                   # Standard MySQL port
+
+      # Backup-plan styres med cron syntaks (her: hver dag kl. 02:00)
+      CRON_TIME: "0 2 * * *"            
+
+      # Hvor mange backups der skal gemmes (ældre slettes automatisk)
+      MAX_BACKUPS: 7
+
+      # Om der skal laves en initiel backup med det samme ved første start
+      INIT_BACKUP: "false"
+
+      # Komprimeringsniveau (1 = hurtig, 9 = maksimal kompression)
+      GZIP_LEVEL: 9
+    volumes:
+      - ./backups:/backup        # Mapper din lokale ./backups mappe til containerens /backup
+                                 # → Her gemmes SQL backup-filerne
+
+volumes:
+  mydata:                        # Definerer Docker volume til at gemme MySQL data
