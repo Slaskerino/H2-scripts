@@ -5,7 +5,7 @@ services:
     image: nginx:latest 
     container_name: nginx_macvlan 
     networks: 
-      macvlan_net: 
+      nginx-reverse-proxy_macvlan_net: 
         ipv4_address: 10.0.10.200 
     # Tilgås direkte på http://192.168.1.200 
  
@@ -16,10 +16,10 @@ services:
       MYSQL_ROOT_PASSWORD: rootpass 
       MYSQL_DATABASE: testdb 
     networks: 
-      macvlan_net: 
+      nginx-reverse-proxy_macvlan_net: 
         ipv4_address: 10.0.10.201 
     # Tilgås direkte på 192.168.1.201:3306 
  
 networks: 
-  macvlan_net: 
+  nginx-reverse-proxy_macvlan_net: 
     external: true
