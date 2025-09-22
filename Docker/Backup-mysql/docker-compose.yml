@@ -1,41 +1,35 @@
-version: "3.8"   # Docker Compose filversion
+version: "3.8"
 
 services:
-  mysql:
-    image: mysql:8                # Bruger den officielle MySQL version 8 image
-    container_name: mydb          # Containeren får navnet "mydb"
-    restart: unless-stopped       # Starter automatisk op igen, medmindre du stopper den manuelt
+  db:
+    image: mysql:8.0
+    container_name: mysql_macvlan
     environment:
-      MYSQL_ROOT_PASSWORD: supersecret   # Root-password til MySQL
-      MYSQL_DATABASE: appdb              # Opretter databasen "appdb" automatisk ved første start
-    volumes:
-      - mydata:/var/lib/mysql     # Binder Docker volume "mydata" til MySQLs datamappe
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: testdb
+    networks:
+      nginx-reverse-proxy_macvlan_net:
+        ipv4_address: 10.0.10.201
 
   mysql-backup:
-    image: fradelg/mysql-cron-backup     # Image med mysqldump + cron indbygget
-    container_name: mydb-backup          # Containeren får navnet "mydb-backup"
-    restart: unless-stopped              # Starter automatisk igen hvis den fejler eller system genstarter
+    image: fradelg/mysql-cron-backup
+    container_name: mysql_macvlan_backup
+    restart: unless-stopped
     environment:
-      # Forbindelsesinfo til din MySQL container
-      MYSQL_HOST: mydb                   # Host = service-navnet på MySQL-containeren
-      MYSQL_USER: root                   # Bruger root til backup
-      MYSQL_PASS: supersecret            # Password matcher MYSQL_ROOT_PASSWORD fra mysql-containeren
-      MYSQL_PORT: 3306                   # Standard MySQL port
-
-      # Backup-plan styres med cron syntaks (her: hver dag kl. 02:00)
-      CRON_TIME: "0 2 * * *"            
-
-      # Hvor mange backups der skal gemmes (ældre slettes automatisk)
+      MYSQL_HOST: 10.0.10.201        # IP-adressen på db-containeren
+      MYSQL_USER: root
+      MYSQL_PASS: rootpass
+      MYSQL_PORT: 3306
+      CRON_TIME: "*/5 * * * *"       # Her hvert 5. minut til test
       MAX_BACKUPS: 7
-
-      # Om der skal laves en initiel backup med det samme ved første start
-      INIT_BACKUP: "false"
-
-      # Komprimeringsniveau (1 = hurtig, 9 = maksimal kompression)
+      INIT_BACKUP: "true"            # Laver backup straks ved container-start
       GZIP_LEVEL: 9
+    networks:
+      nginx-reverse-proxy_macvlan_net:
+        ipv4_address: 10.0.10.202    # Ledig IP i samme subnet
     volumes:
-      - ./backups:/backup        # Mapper din lokale ./backups mappe til containerens /backup
-                                 # → Her gemmes SQL backup-filerne
+      - ./backups:/backup            # Mapper til lokal mappe for backupfiler
 
-volumes:
-  mydata:                        # Definerer Docker volume til at gemme MySQL data
+networks:
+  nginx-reverse-proxy_macvlan_net:
+    external: true
