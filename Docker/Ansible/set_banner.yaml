@@ -1,0 +1,38 @@
+---
+- name: Configure login banner on Cisco IOS routers
+  hosts: cisco_routers
+  gather_facts: no
+  tasks:
+
+    - name: Set login banner with dynamic hostname
+      cisco.ios.ios_banner:
+        banner: login
+        text: |
+          ***********************************
+          *  Velkommen til hosten {{ router_hostname }}  *
+          *  Din mor er en mand  *
+          ***********************************
+        state: present
+
+    - name: Set motd banner with dynamic hostname
+      cisco.ios.ios_banner:
+        banner: motd
+        text: |
+          ***********************************
+          *  Velkommen til hosten {{ router_hostname }}  *
+          *  Dagens motto er:    *
+          *  Din mor er en mand  *
+          ***********************************
+        state: present
+
+
+    - name: Set motd banner with dynamic hostname
+      cisco.ios.ios_banner:
+        banner: exec
+        text: |
+          ***********************************
+          *  Hold da ferie, du har nu adgang til {{ router_hostname }}  *
+          *  Dette må så betyde:    *
+          *  Din mor er en mand  *
+          ***********************************
+        state: present
