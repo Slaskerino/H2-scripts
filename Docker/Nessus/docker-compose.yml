@@ -8,5 +8,5 @@ services:
     environment:
       - NESSUS_ADMIN_USERNAME=adminroot
       - NESSUS_ADMIN_PASSWORD=Password1 
-      #- NESSUS_LINKING_KEY=your_linking_key 
+      - NESSUS_LINKING_KEY=your_linking_key 
     restart: unless-stopped 
