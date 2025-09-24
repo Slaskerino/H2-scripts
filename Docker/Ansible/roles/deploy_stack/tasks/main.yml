@@ -24,14 +24,15 @@
   loop: "{{ site_data.keys() | list }}"
   vars:
     current_site: "{{ item }}"
-    current_message: "{{ site_data[item] }}"
+    site_message: "{{ site_data[item] }}"  # ✅ this defines 'site_message' for the template
   become: true
 
+
 # Copy Nginx config
-- name: Copy nginx.conf
+- name: Copy default.conf
   ansible.builtin.copy:
-    src: nginx.conf
-    dest: /opt/nginx_stack/nginx.conf
+    src: default.conf
+    dest: /opt/nginx_stack/default.conf
   become: true
 
 # Copy Docker Compose file
