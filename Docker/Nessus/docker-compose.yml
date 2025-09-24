@@ -1,0 +1,12 @@
+version: '3.8' 
+services: 
+  nessus: 
+    image: tenable/nessus:latest-ubuntu 
+    container_name: nessus_scanner 
+    ports: 
+      - "8834:8834" # Map Nessus default port 
+    environment:
+      - NESSUS_ADMIN_USERNAME=adminroot
+      - NESSUS_ADMIN_PASSWORD=Password1 
+      - NESSUS_LINKING_KEY=your_linking_key 
+    restart: unless-stopped 

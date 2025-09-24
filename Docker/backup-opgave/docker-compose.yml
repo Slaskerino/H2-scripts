@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - nfs-data:/usr/share/nginx/html:ro
+
+volumes:
+  nfs-data:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: "addr=10.0.10.14,nolock,ro"
+      device: ":/mnt/prod-pool01/web"
