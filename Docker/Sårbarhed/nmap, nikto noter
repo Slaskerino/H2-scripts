@@ -1,0 +1,23 @@
+#nmap
+sudo apt install nmap -y
+
+sudo nmap -sV -p- 10.0.10.20    # Scan all ports and detect service versions
+
+sudo nmap -sV -p- 10.0.10.20 | sed '/^SF/d' | sudo tee scan-basic.txt > /dev/null # Save output to file without SF lines
+
+
+#Nikto
+server {
+    listen 80;
+    server_name localhost;
+
+    # Herunder indsættes ændringerne:
+    etag off;
+    server_tokens off;
+
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+
+
+}
