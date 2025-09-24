@@ -8,6 +8,10 @@ all:
           ansible_host: 10.0.69.22
         web3:
           ansible_host: 10.0.69.23
+        web4:
+          ansible_host: 10.0.69.25
   vars:
-    ansible_user: adminroot  # or whatever your SSH user is
-    ansible_password: Password1
+    ansible_user: adminroot  
+    ansible_ssh_pass: Password1
+    ansible_python_interpreter: /usr/bin/python3
+    ansible_become_pass: Password1
