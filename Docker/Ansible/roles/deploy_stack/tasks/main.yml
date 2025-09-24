@@ -1,43 +1,49 @@
-- name: Install Docker and Docker Compose
-  apt:
-    name:
-      - docker.io
-      - docker-compose
-    state: present
-    update_cache: yes
-
+---
+# Ensure Docker is running
 - name: Ensure Docker is running
-  service:
+  ansible.builtin.service:
     name: docker
     state: started
     enabled: true
+  become: true
 
+# Create directories for each website
 - name: Create directories for web sites
-  file:
+  ansible.builtin.file:
     path: "/opt/nginx_stack/{{ item }}"
     state: directory
     recurse: true
   loop: "{{ site_data.keys() | list }}"
+  become: true
 
+# Generate custom index.html for each site from template
 - name: Generate custom index.html for each site
-  template:
+  ansible.builtin.template:
     src: index.html.j2
     dest: "/opt/nginx_stack/{{ item }}/index.html"
   loop: "{{ site_data.keys() | list }}"
   vars:
     current_site: "{{ item }}"
     current_message: "{{ site_data[item] }}"
+  become: true
 
-- name: Copy nginx config
-  copy:
+# Copy Nginx config
+- name: Copy nginx.conf
+  ansible.builtin.copy:
     src: nginx.conf
     dest: /opt/nginx_stack/nginx.conf
+  become: true
 
-- name: Copy Docker Compose file
-  copy:
+# Copy Docker Compose file
+- name: Copy docker-compose.yml
+  ansible.builtin.copy:
     src: docker-compose.yml
     dest: /opt/nginx_stack/docker-compose.yml
+  become: true
 
+# Start the Docker Compose stack
 - name: Start Docker stack
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /opt/nginx_stack
+    state: present
+  become: true
