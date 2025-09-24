@@ -1,0 +1,6 @@
+- name: Deploy static sites with host-specific content
+  hosts: webservers
+  become: true
+
+  roles:
+    - deploy_stack

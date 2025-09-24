@@ -1,0 +1,4 @@
+site_data:
+  web1: "Shared message for Web1 across all hosts"
+  web2: "Shared message for Web2 across all hosts"
+  web3: "Shared message for Web3 across all hosts"

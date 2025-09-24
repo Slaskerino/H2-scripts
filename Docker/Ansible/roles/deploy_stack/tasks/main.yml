@@ -1,0 +1,43 @@
+- name: Install Docker and Docker Compose
+  apt:
+    name:
+      - docker.io
+      - docker-compose
+    state: present
+    update_cache: yes
+
+- name: Ensure Docker is running
+  service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Create directories for web sites
+  file:
+    path: "/opt/nginx_stack/{{ item }}"
+    state: directory
+    recurse: true
+  loop: "{{ site_data.keys() | list }}"
+
+- name: Generate custom index.html for each site
+  template:
+    src: index.html.j2
+    dest: "/opt/nginx_stack/{{ item }}/index.html"
+  loop: "{{ site_data.keys() | list }}"
+  vars:
+    current_site: "{{ item }}"
+    current_message: "{{ site_data[item] }}"
+
+- name: Copy nginx config
+  copy:
+    src: nginx.conf
+    dest: /opt/nginx_stack/nginx.conf
+
+- name: Copy Docker Compose file
+  copy:
+    src: docker-compose.yml
+    dest: /opt/nginx_stack/docker-compose.yml
+
+- name: Start Docker stack
+  community.docker.docker_compose:
+    project_src: /opt/nginx_stack
